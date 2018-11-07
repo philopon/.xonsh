@@ -1,0 +1,58 @@
+#!/usr/bin/env python
+
+from __future__ import print_function
+
+import argparse
+from logging import getLogger
+import sys
+import os
+
+
+logger = getLogger(__name__)
+
+
+def touch_nb(PATH, kernel=None, dry_run=False):
+    import json
+
+    result = {
+        "cells": [],
+        "metadata": {},
+        "nbformat": 4,
+        "nbformat_minor": 2,
+    }
+
+    if kernel is not None:
+        from jupyter_client import kernelspec
+        try:
+            spec = kernelspec.get_kernel_spec(kernel)
+        except kernelspec.NoSuchKernel:
+            logger.fatal("ERROR: available kernel: {}".format(
+                ", ".join(kernelspec.find_kernel_specs())))
+            return 1
+
+        result["metadata"]["kernelspec"] = {
+            "display_name": spec.display_name,
+            "language": spec.language,
+            "name": kernel,
+        }
+
+    if dry_run:
+        print(json.dumps(result, indent=2))
+    else:
+        if os.path.splitext(PATH)[1] != ".ipynb":
+            PATH += ".ipynb"
+
+        if not os.path.isfile(PATH):
+            json.dump(result, open(PATH, 'w'), indent=2)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-k', '--kernel', type=str, help='kernel name')
+    parser.add_argument('PATH', type=str, help='file path')
+    parser.add_argument('-n', '--dry-run', action='store_true', help='dry run')
+    sys.exit(touch_nb(**vars(parser.parse_args())))
+
+
+if __name__ == "__main__":
+    main()

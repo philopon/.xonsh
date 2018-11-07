@@ -23,6 +23,7 @@ def initialize_xonsh():
     $XONSH_HISTORY_SIZE = (20 * 1024, 'commands')
 
     utils.add_PATH(
+        os.path.join(XONSH_BASE_DIR, "bin"),
         "/usr/local/bin",
         "~/miniconda3/bin",
     )
