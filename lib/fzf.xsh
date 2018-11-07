@@ -1,8 +1,8 @@
 import os
 from xonsh import dirstack
 
-def ghq(event, fzf):
-    result = $(ghq list | @(fzf) | cat)  # cat: avoid xonsh & fzf bug
+def ghq(event, ghq, fzf):
+    result = $(@(ghq) list | @(fzf) | cat)  # cat: avoid xonsh & fzf bug
 
     if result:
         path = os.path.join($(ghq root).strip(), result.strip())

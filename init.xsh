@@ -7,13 +7,16 @@ def initialize_xonsh():
     sys.path.append(os.path.join(XONSH_BASE_DIR, "lib"))
 
     import install
-    import conda_wrapper
-    import fzf
-    import utils
 
     install.pip("prompt_toolkit")
     install.pip("pygments")
+    install.pip("requests")
     fzf_path = install.fzf(XONSH_BASE_DIR)
+    ghq_path = install.ghq(XONSH_BASE_DIR)
+
+    import conda_wrapper
+    import fzf
+    import utils
 
     $XONSH_HISTORY_BACKEND = 'sqlite'
     $AUTO_CD = True
@@ -44,7 +47,7 @@ def initialize_xonsh():
         from prompt_toolkit.keys import Keys
         from xonsh import dirstack
 
-        bindings.add(Keys.ControlG)(partial(fzf.ghq, fzf=fzf_path))
+        bindings.add(Keys.ControlG)(partial(fzf.ghq, ghq=ghq_path, fzf=fzf_path))
         bindings.add(Keys.ControlR)(partial(fzf.history, fzf=fzf_path))
 
         @bindings.add(Keys.ControlT)
