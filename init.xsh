@@ -2,6 +2,7 @@ def initialize_xonsh():
     import os
     import sys
     from functools import partial
+    import re
 
     XONSH_BASE_DIR = os.path.expanduser("~/.xonsh")
     sys.path.append(os.path.join(XONSH_BASE_DIR, "lib"))
@@ -54,6 +55,18 @@ def initialize_xonsh():
         def popd(event):
             dirstack.popd([])
             event.current_buffer.validate_and_handle()  # refresh prompt
+
+        spaces = re.compile(r' +')
+        @bindings.add(Keys.ControlF)
+        def complete_suggestion(event):
+            buf = event.current_buffer
+            s = buf.suggestion
+            if s:
+                fs = spaces.split(s.text)
+                buf.insert_text((' ' + fs[1] if fs[0] == '' else fs[0]) + " ")
+            else:
+                buf.cursor_right()
+
 
 initialize_xonsh()
 del initialize_xonsh
