@@ -26,6 +26,9 @@ def initialize_xonsh():
     $DIRSTACK_SIZE = 50
     $XONSH_HISTORY_SIZE = (20 * 1024, 'commands')
 
+    $HOMEBREW_NO_ANALYTICS = 1
+    $HOMEBREW_NO_AUTO_UPDATE = 1
+
     utils.add_PATH(
         os.path.join(XONSH_BASE_DIR, "bin"),
         "/usr/local/bin",
