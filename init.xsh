@@ -31,8 +31,8 @@ def initialize_xonsh():
 
     utils.add_PATH(
         os.path.join(XONSH_BASE_DIR, "bin"),
-        "/usr/local/bin",
         "~/miniconda3/bin",
+        "/usr/local/bin",
     )
 
     $PROMPT = (
