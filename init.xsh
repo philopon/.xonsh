@@ -66,7 +66,8 @@ def initialize_xonsh():
         @bindings.add(Keys.ControlT)
         def popd(event):
             dirstack.popd([])
-            event.current_buffer.validate_and_handle()  # refresh prompt
+            event.current_buffer.insert_text("dirs")
+            event.current_buffer.validate_and_handle()
 
         spaces = re.compile(r' +')
         @bindings.add(Keys.ControlF)
