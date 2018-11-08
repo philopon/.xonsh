@@ -2,7 +2,6 @@ def initialize_xonsh():
     import os
     import sys
     from functools import partial
-    import re
 
     XONSH_BASE_DIR = os.path.expanduser("~/.xonsh")
     sys.path.append(os.path.join(XONSH_BASE_DIR, "lib"))
@@ -16,8 +15,8 @@ def initialize_xonsh():
     ghq_path = install.ghq(XONSH_BASE_DIR)
 
     import conda_wrapper
-    import fzf
     import utils
+    from keybindings import custom_keybindings
 
     $XONSH_HISTORY_BACKEND = 'sqlite'
     $AUTO_CD = True
@@ -25,6 +24,8 @@ def initialize_xonsh():
     $COMPLETIONS_MENU_ROWS = 20
     $DIRSTACK_SIZE = 50
     $XONSH_HISTORY_SIZE = (20 * 1024, 'commands')
+    $XONSH_AUTOPAIR = True
+    $CASE_SENSITIVE_COMPLETIONS = True
 
     $HOMEBREW_NO_ANALYTICS = 1
     $HOMEBREW_NO_AUTO_UPDATE = 1
@@ -55,30 +56,7 @@ def initialize_xonsh():
 
     aliases['conda'] = partial(conda_wrapper.conda, conda=conda_path)
 
-    @events.on_ptk_create
-    def custom_keybindings(bindings, **kwargs):
-        from prompt_toolkit.keys import Keys
-        from xonsh import dirstack
-
-        bindings.add(Keys.ControlG)(partial(fzf.ghq, ghq=ghq_path, fzf=fzf_path))
-        bindings.add(Keys.ControlR)(partial(fzf.history, fzf=fzf_path))
-
-        @bindings.add(Keys.ControlT)
-        def popd(event):
-            dirstack.popd([])
-            event.current_buffer.insert_text("dirs")
-            event.current_buffer.validate_and_handle()
-
-        spaces = re.compile(r' +')
-        @bindings.add(Keys.ControlF)
-        def complete_suggestion(event):
-            buf = event.current_buffer
-            s = buf.suggestion
-            if s:
-                fs = spaces.split(s.text)
-                buf.insert_text((' ' + fs[1] if fs[0] == '' else fs[0]) + " ")
-            else:
-                buf.cursor_right()
+    events.on_ptk_create(partial(custom_keybindings, fzf_path=fzf_path, ghq_path=ghq_path))
 
 
 initialize_xonsh()
