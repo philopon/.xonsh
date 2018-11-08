@@ -22,7 +22,8 @@ def fzf(base):
 
 
 ghq_names = {
-    ("Darwin", ("64bit", "")): "ghq_darwin_amd64.zip"
+    ("Darwin", ("64bit", "")): "ghq_darwin_amd64.zip",
+    ('Linux', ('64bit', '')): "ghq_linux_amd64.zip"
 }
 
 
