@@ -34,13 +34,20 @@ def initialize_xonsh():
 
     $PROMPT = (
         '{env_name:{}}'
-        '{BOLD_GREEN}{user}@{hostname} '
+        '{BOLD_GREEN}{user}{ssh_color}@{hostname} '
         '{BOLD_BLUE}{cwd}'
         '{branch_color}{curr_branch: ({})}{NO_COLOR}\n'
         '{BOLD_BLUE}{prompt_end}{NO_COLOR} '
     )
 
+    def ssh_color():
+        if 'SSH_CONNECTION' in ${...}:
+            return '{INTENSE_RED}'
+        else:
+            return '{BOLD_GREEN}'
+
     $PROMPT_FIELDS['env_name'] = conda_wrapper.env_name
+    $PROMPT_FIELDS['ssh_color'] = ssh_color
     aliases['conda'] = conda_wrapper.conda
 
     @events.on_ptk_create
