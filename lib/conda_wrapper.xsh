@@ -32,13 +32,14 @@ def conda_deactivate(args):
     for line in StringIO(result):
         eval_posix(line, {'PS1'})
 
-def conda(args):
-    if args[0] == 'activate':
-        return conda_activate(args[1:])
-    elif args[0] == 'deactivate':
-        return conda_deactivate([])
+def conda(args, conda='conda'):
+    if len(args) > 0:
+        if args[0] == 'activate':
+            return conda_activate(args[1:])
+        elif args[0] == 'deactivate':
+            return conda_deactivate([])
 
-    command conda @(args)
+    @(conda) @(args)
 
 def env_name():
     env = __xonsh__.env.get('CONDA_DEFAULT_ENV', '')
