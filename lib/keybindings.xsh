@@ -7,12 +7,20 @@ import fzf
 import re
 from common_prefix import common_prefix
 
-def custom_keybindings(bindings, fzf_path, ghq_path, **kwargs):
+def custom_keybindings(bindings, *, fzf_path, ghq_path, conda_path, **kwargs):
     @filters.Condition
     def can_partial_complete():
         buf = get_app().current_buffer
         s = buf.suggestion
         return s and ' ' in s.text
+
+    @filters.Condition
+    def in_conda_env():
+        return "CONDA_DEFAULT_ENV" in __xonsh__.env
+
+    @filters.Condition
+    def no_input():
+        return get_app().current_buffer.text == ""
 
     bindings.add(Keys.ControlG)(partial(fzf.ghq, ghq=ghq_path, fzf=fzf_path))
     bindings.add(Keys.ControlR)(partial(fzf.history, fzf=fzf_path))
@@ -54,3 +62,12 @@ def custom_keybindings(bindings, fzf_path, ghq_path, **kwargs):
         if common and len(common) > comp_len:
             buf.delete_before_cursor(comp_len)
             buf.insert_text(common)
+
+    @bindings.add(Keys.ControlD, filter=no_input)
+    def ignore_eof(event):
+        event.app.output.bell()
+
+    @bindings.add(Keys.ControlD, filter=in_conda_env & no_input)
+    def conda_deactivate(event):
+        source-bash $(@(conda_path) shell.posix deactivate)
+        event.current_buffer.validate_and_handle()

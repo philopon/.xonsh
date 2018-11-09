@@ -56,7 +56,7 @@ def initialize_xonsh():
 
     aliases['conda'] = partial(conda_wrapper.conda, conda_path=conda_path)
 
-    events.on_ptk_create(partial(custom_keybindings, fzf_path=fzf_path, ghq_path=ghq_path))
+    events.on_ptk_create(partial(custom_keybindings, fzf_path=fzf_path, ghq_path=ghq_path, conda_path=conda_path))
 
 
 initialize_xonsh()
