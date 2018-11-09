@@ -13,9 +13,11 @@ def initialize_xonsh():
     install.pip("requests")
     fzf_path = install.fzf(XONSH_BASE_DIR)
     ghq_path = install.ghq(XONSH_BASE_DIR)
+    conda_path = $(which conda)
 
     import conda_wrapper
     import utils
+    from prompt import set_prompt
     from keybindings import custom_keybindings
 
     $XONSH_HISTORY_BACKEND = 'sqlite'
@@ -36,27 +38,11 @@ def initialize_xonsh():
         "/usr/local/bin",
     )
 
-    $PROMPT = (
-        '{env_name:{}}'
-        '{BOLD_GREEN}{user}{ssh_color}@{hostname} '
-        '{BOLD_BLUE}{cwd}'
-        '{branch_color}{curr_branch: ({})}{NO_COLOR}\n'
-        '{BOLD_BLUE}{prompt_end}{NO_COLOR} '
-    )
-
-    def ssh_color():
-        if 'SSH_CONNECTION' in ${...}:
-            return '{INTENSE_RED}'
-        else:
-            return '{BOLD_GREEN}'
-
-    $PROMPT_FIELDS['env_name'] = conda_wrapper.env_name
-    $PROMPT_FIELDS['ssh_color'] = ssh_color
-    conda_path = $(which conda)
-
     aliases['conda'] = partial(conda_wrapper.conda, conda_path=conda_path)
 
     events.on_ptk_create(partial(custom_keybindings, fzf_path=fzf_path, ghq_path=ghq_path, conda_path=conda_path))
+
+    set_prompt()
 
 
 initialize_xonsh()
