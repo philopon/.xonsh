@@ -2,6 +2,7 @@ from prompt_toolkit.keys import Keys
 from prompt_toolkit import filters
 from prompt_toolkit.application.current import get_app
 from xonsh import dirstack
+from xonsh.aliases import xonsh_exit
 from functools import partial
 import fzf
 import re
@@ -66,6 +67,11 @@ def custom_keybindings(bindings, *, fzf_path, ghq_path, conda_path, **kwargs):
     @bindings.add(Keys.ControlD, filter=no_input)
     def ignore_eof(event):
         event.app.output.bell()
+
+    @bindings.add(Keys.ControlD, Keys.ControlD, filter=no_input)
+    def two_control_d_to_exit(event):
+        event.cli.current_buffer.validate_and_handle()
+        xonsh_exit([])
 
     @bindings.add(Keys.ControlD, filter=in_conda_env & no_input)
     def conda_deactivate(event):
