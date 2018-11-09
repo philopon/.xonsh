@@ -31,16 +31,6 @@ def custom_keybindings(bindings, fzf_path, ghq_path, **kwargs):
         s = spaces.split(buf.suggestion.text)
         buf.insert_text((' ' + s[1] if s[0] == '' else s[0]) + " ")
 
-    @bindings.add(Keys.ControlP, filter=filters.has_completions)
-    def history_forward(event):
-        event.current_buffer.cancel_completion()
-        event.current_buffer.history_backward()
-
-    @bindings.add(Keys.ControlN, filter=filters.has_completions)
-    def history_forward(event):
-        event.current_buffer.cancel_completion()
-        event.current_buffer.history_forward()
-
     @bindings.add('/', filter=filters.has_completions)
     def apply_on_slash(event):
         buf = event.current_buffer
@@ -64,5 +54,3 @@ def custom_keybindings(bindings, fzf_path, ghq_path, **kwargs):
         if common and len(common) > comp_len:
             buf.delete_before_cursor(comp_len)
             buf.insert_text(common)
-        else:
-            buf.complete_next()
