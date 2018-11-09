@@ -6,7 +6,7 @@ from subprocess import SubprocessError
 def set_prompt():
     $PROMPT = (
         '{env_name:{}}'
-        '{BOLD_#5f5f5f}{user}{ssh_color}@{hostname} '
+        '{BOLD_#5f5f5f}{puser}{ssh_color}@{phostname} '
         '{BOLD_#d78700}{cwd}'
         '{NO_COLOR}{git_info: ({})}\n'
         '{prompt_end_color}{prompt_end}{NO_COLOR} '
@@ -34,6 +34,14 @@ def set_prompt():
         19: "⓳",
         20: "⓴",
     }
+
+    $PRIVATE = False
+
+    def puser():
+        return "XXXXX" if $PRIVATE else $PROMPT_FIELDS["user"]
+
+    def phostname():
+        return "XXXXX" if $PRIVATE else $PROMPT_FIELDS["hostname"]
 
     def git_info():
         try:
@@ -63,3 +71,5 @@ def set_prompt():
     $PROMPT_FIELDS['ssh_color'] = ssh_color
     $PROMPT_FIELDS['prompt_end_color'] = prompt_end_color
     $PROMPT_FIELDS['git_info'] = git_info
+    $PROMPT_FIELDS['puser'] = puser
+    $PROMPT_FIELDS['phostname'] = phostname

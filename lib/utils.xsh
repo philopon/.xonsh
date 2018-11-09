@@ -1,6 +1,7 @@
 import os
 import warnings
 
+
 def add_PATH(*paths):
     for path in reversed(paths):
         path = os.path.expanduser(path)

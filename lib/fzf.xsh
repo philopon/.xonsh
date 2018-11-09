@@ -1,6 +1,7 @@
 import os
 from xonsh import dirstack
 
+
 def ghq(event, ghq, fzf):
     result = $(@(ghq) list | @(fzf) | cat)  # cat: avoid xonsh & fzf bug
 
@@ -9,6 +10,7 @@ def ghq(event, ghq, fzf):
         dirstack.cd([path])
 
     event.current_buffer.validate_and_handle()  # refresh prompt
+
 
 def history(event, fzf):
     result = ![history show all | @(fzf) --tac | cat]

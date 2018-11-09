@@ -1,12 +1,16 @@
+from functools import partial
+import re
+
 from prompt_toolkit.keys import Keys
 from prompt_toolkit import filters
 from prompt_toolkit.application.current import get_app
+
 from xonsh import dirstack
 from xonsh.aliases import xonsh_exit
-from functools import partial
+
 import fzf
-import re
 from common_prefix import common_prefix
+
 
 def custom_keybindings(bindings, *, fzf_path, ghq_path, conda_path, **kwargs):
     @filters.Condition

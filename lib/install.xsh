@@ -1,10 +1,7 @@
-import importlib
-import platform
 import os
-import zipfile
-from io import BytesIO
 
 def pip(pkg, pyname=None):
+    import importlib
     if not importlib.util.find_spec(pyname or pkg):
         xpip install @(pkg)
 
@@ -21,19 +18,21 @@ def fzf(base):
     return bin
 
 
-ghq_names = {
-    ("Darwin", ("64bit", "")): "ghq_darwin_amd64.zip",
-    ('Linux', ('64bit', '')): "ghq_linux_amd64.zip"
-}
-
-
 def ghq(base):
+    import platform
+    import zipfile
+    import requests
+    import github
+    from io import BytesIO
+
+    ghq_names = {
+        ("Darwin", ("64bit", "")): "ghq_darwin_amd64.zip",
+        ('Linux', ('64bit', '')): "ghq_linux_amd64.zip"
+    }
+
     bin = os.path.join(base, "bin", "ghq")
     if os.path.isfile(bin):
         return bin
-
-    import requests
-    import github
 
     name = ghq_names[(platform.system(), platform.architecture())]
     for asset in github.latest("motemen", "ghq")["assets"]:
