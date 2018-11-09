@@ -19,9 +19,6 @@ def initialize_xonsh():
     ghq_path = install.ghq(XONSH_BASE_DIR)
 
     import conda_wrapper
-    import utils
-    from prompt import set_prompt
-    from keybindings import custom_keybindings
 
     $XONSH_HISTORY_BACKEND = 'sqlite'
     $AUTO_CD = True
@@ -37,37 +34,33 @@ def initialize_xonsh():
     $HOMEBREW_NO_AUTO_UPDATE = 1
     $COLOR_RESULTS = False
 
+    import utils
+
     utils.add_PATH(
         os.path.join(XONSH_BASE_DIR, "bin"),
         "~/miniconda3/bin",
         "/usr/local/bin",
     )
 
-    conda_path = __xonsh__.commands_cache.locate_binary('conda')
+    conda_path = $(which conda)
 
+    from prompt import set_prompt
+    set_prompt()
+
+    from keybindings import custom_keybindings
     events.on_ptk_create(partial(custom_keybindings, fzf_path=fzf_path, ghq_path=ghq_path, conda_path=conda_path))
+
+    from rdkit_wrapper import rdkit_wrapper
+    events.on_import_post_exec_module(rdkit_wrapper)
+
     @events.on_import_post_exec_module
-    def _(module=None, **kwargs):
+    def set_matplotlib_backend(module=None, **kwargs):
         if module.__name__ == 'matplotlib':
             return module.use('svg')
 
-        if module.__name__ == 'rdkit.Chem':
-            from rdkit.Chem import Draw
-            from io import BytesIO
-            from iterm2_tools.images import display_image_bytes
-
-            def _mol_repr_pretty_(self, p, cycle):
-                b = BytesIO()
-                img = Draw.MolToImage(self)
-                img.save(b, format='png')
-                p.text(display_image_bytes(b.getbuffer()))
-
-            module.Mol._repr_pretty_ = _mol_repr_pretty_
-
-    set_prompt()
-
     def initialize_variables():
-        import numpy as np
+        np = utils.lazymodule("numpy")
+
         globals().update(locals())
 
     initialize_variables()
@@ -78,7 +71,7 @@ def initialize_xonsh():
 
     aliases['reset'] = reset
 
-    # aliases['conda'] = partial(conda_wrapper.conda, conda_path=conda_path)
+    aliases['conda'] = partial(conda_wrapper.conda, conda_path=conda_path)
 
     xconda = os.path.join(os.path.dirname(sys.executable), 'conda')
     if os.path.isfile(xconda):

@@ -19,6 +19,10 @@ def fzf(base):
 
 
 def ghq(base):
+    bin = os.path.join(base, "bin", "ghq")
+    if os.path.isfile(bin):
+        return bin
+
     import platform
     import zipfile
     import requests
@@ -29,10 +33,6 @@ def ghq(base):
         ("Darwin", ("64bit", "")): "ghq_darwin_amd64.zip",
         ('Linux', ('64bit', '')): "ghq_linux_amd64.zip"
     }
-
-    bin = os.path.join(base, "bin", "ghq")
-    if os.path.isfile(bin):
-        return bin
 
     name = ghq_names[(platform.system(), platform.architecture())]
     for asset in github.latest("motemen", "ghq")["assets"]:

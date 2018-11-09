@@ -1,4 +1,4 @@
-def conda(args, conda_path='conda'):
+def conda(args, *, conda_path):
     if len(args) == 0:
         @(conda_path)
         return
