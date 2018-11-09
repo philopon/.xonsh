@@ -68,16 +68,16 @@ def custom_keybindings(bindings, *, fzf_path, ghq_path, conda_path, **kwargs):
             buf.delete_before_cursor(comp_len)
             buf.insert_text(common)
 
-    @bindings.add(Keys.ControlD, filter=no_input)
+    @bindings.add(Keys.ControlD, filter=no_input & ~in_conda_env)
     def ignore_eof(event):
         event.app.output.bell()
 
-    @bindings.add(Keys.ControlD, Keys.ControlD, filter=no_input)
+    @bindings.add(Keys.ControlD, Keys.ControlD, filter=no_input & ~in_conda_env)
     def two_control_d_to_exit(event):
         event.cli.current_buffer.validate_and_handle()
         xonsh_exit([])
 
-    @bindings.add(Keys.ControlD, filter=in_conda_env & no_input)
+    @bindings.add(Keys.ControlD, filter=no_input & in_conda_env)
     def conda_deactivate(event):
         source-bash $(@(conda_path) shell.posix deactivate)
         event.current_buffer.validate_and_handle()
