@@ -12,14 +12,39 @@ def set_prompt():
         '{prompt_end_color}{prompt_end}{NO_COLOR} '
     )
 
+    circle_number = {
+        1: "❶",
+        2: "❷",
+        3: "❸",
+        4: "❹",
+        5: "❺",
+        6: "❻",
+        7: "❼",
+        8: "❽",
+        9: "❾",
+        10: "❿",
+        11: "⓫",
+        12: "⓬",
+        13: "⓭",
+        14: "⓮",
+        15: "⓯",
+        16: "⓰",
+        17: "⓱",
+        18: "⓲",
+        19: "⓳",
+        20: "⓴",
+    }
+
     def git_info():
         try:
             s = gitstatus()
             chunks = [s.branch]
+            if s.untracked > 0:
+                chunks.extend(["{#af0000}", circle_number.get(s.untracked, "●"), "{NO_COLOR} "])
             if s.changed > 0:
-                chunks.append("{#ffaf00}● {NO_COLOR}")
+                chunks.extend(["{#ffaf00}", circle_number.get(s.changed, "●"), "{NO_COLOR} "])
             if s.staged > 0:
-                chunks.append("{#00d700}● {NO_COLOR}")
+                chunks.extend(["{#00af00}", circle_number.get(s.staged, "●"), "{NO_COLOR} "])
 
             return "".join(chunks)
         except SubprocessError:
