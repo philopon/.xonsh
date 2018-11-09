@@ -11,9 +11,9 @@ def initialize_xonsh():
     install.pip("prompt_toolkit")
     install.pip("pygments")
     install.pip("requests")
+    install.pip("numpy")
     fzf_path = install.fzf(XONSH_BASE_DIR)
     ghq_path = install.ghq(XONSH_BASE_DIR)
-    conda_path = $(which conda)
 
     import conda_wrapper
     import utils
@@ -38,6 +38,7 @@ def initialize_xonsh():
         "/usr/local/bin",
     )
 
+    conda_path = $(which conda)
     aliases['conda'] = partial(conda_wrapper.conda, conda_path=conda_path)
 
     events.on_ptk_create(partial(custom_keybindings, fzf_path=fzf_path, ghq_path=ghq_path, conda_path=conda_path))
@@ -47,3 +48,5 @@ def initialize_xonsh():
 
 initialize_xonsh()
 del initialize_xonsh
+
+import numpy as np
