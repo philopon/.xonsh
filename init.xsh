@@ -54,7 +54,7 @@ def initialize_xonsh():
     $PROMPT_FIELDS['ssh_color'] = ssh_color
     conda_path = $(which conda)
 
-    aliases['conda'] = partial(conda_wrapper.conda, conda=conda_path)
+    aliases['conda'] = partial(conda_wrapper.conda, conda_path=conda_path)
 
     events.on_ptk_create(partial(custom_keybindings, fzf_path=fzf_path, ghq_path=ghq_path))
 
