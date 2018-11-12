@@ -40,6 +40,7 @@ def initialize_xonsh():
     utils.add_PATH(
         os.path.join(XONSH_BASE_DIR, "bin"),
         "~/miniconda3/bin",
+        "~/.cargo/bin",
         "/usr/local/bin",
     )
 
@@ -49,7 +50,8 @@ def initialize_xonsh():
     set_prompt()
 
     from keybindings import custom_keybindings
-    events.on_ptk_create(partial(custom_keybindings, fzf_path=fzf_path, ghq_path=ghq_path, conda_path=conda_path))
+    events.on_ptk_create(partial(
+        custom_keybindings, fzf_path=fzf_path, ghq_path=ghq_path, conda_path=conda_path))
 
     import repr_pretty
     events.on_import_post_exec_module(repr_pretty.handler)
@@ -77,6 +79,9 @@ def initialize_xonsh():
     xconda = os.path.join(os.path.dirname(sys.executable), 'conda')
     if os.path.isfile(xconda):
         aliases['xconda'] = xconda
+
+    aliases['ll'] = 'ls -l'
+    aliases['llh'] = 'ls -lh'
 
 
 initialize_xonsh()
