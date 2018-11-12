@@ -14,6 +14,7 @@ def initialize_xonsh():
     install.pip("numpy")
     install.pip("matplotlib")
     install.pip("iterm2_tools")
+    install.pip("pillow", "PIL")
 
     fzf_path = install.fzf(XONSH_BASE_DIR)
     ghq_path = install.ghq(XONSH_BASE_DIR)
