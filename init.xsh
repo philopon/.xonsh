@@ -51,8 +51,8 @@ def initialize_xonsh():
     from keybindings import custom_keybindings
     events.on_ptk_create(partial(custom_keybindings, fzf_path=fzf_path, ghq_path=ghq_path, conda_path=conda_path))
 
-    from rdkit_wrapper import rdkit_wrapper
-    events.on_import_post_exec_module(rdkit_wrapper)
+    import repr_pretty
+    events.on_import_post_exec_module(repr_pretty.handler)
 
     @events.on_import_post_exec_module
     def set_matplotlib_backend(module=None, **kwargs):
