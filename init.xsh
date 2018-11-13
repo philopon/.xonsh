@@ -62,9 +62,9 @@ def initialize_xonsh():
             return module.use('svg')
 
     def initialize_variables():
-        np = utils.lazymodule("numpy")
-
-        globals().update(locals())
+        globals().update([
+            ("np", utils.lazymodule("numpy")),
+        ])
 
     initialize_variables()
 
@@ -75,6 +75,8 @@ def initialize_xonsh():
     aliases['reset'] = reset
 
     aliases['conda'] = partial(conda_wrapper.conda, conda_path=conda_path)
+    __xonsh__.completers['conda'] = conda_wrapper.completer
+    __xonsh__.completers.move_to_end('conda', False)
 
     xconda = os.path.join(os.path.dirname(sys.executable), 'conda')
     if os.path.isfile(xconda):

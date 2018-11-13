@@ -20,3 +20,24 @@ def lazymodule(name):
         return importlib.import_module(name)
 
     return module
+
+
+class OneLineCache(object):
+    def __init__(self, fn):
+        self.i = None
+        self.fn = fn
+        self._cache = None
+
+    def unwrap(self):
+        i = len(__xonsh__.history)
+        if self.i != i:
+            self._cache = None
+
+        if self._cache == None:
+            self.i = i
+            self._cache = self.fn()
+
+        return self._cache
+
+    def __iter__(self):
+        return iter(self.unwrap())

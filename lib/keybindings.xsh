@@ -30,10 +30,10 @@ def custom_keybindings(bindings, *, fzf_path, ghq_path, conda_path, **kwargs):
     bindings.add(Keys.ControlG)(partial(fzf.ghq, ghq=ghq_path, fzf=fzf_path))
     bindings.add(Keys.ControlR)(partial(fzf.history, fzf=fzf_path))
 
-    @bindings.add(Keys.ControlT)
+    @bindings.add(Keys.ControlB, filter=no_input)
     def popd(event):
         dirstack.popd([])
-        event.current_buffer.insert_text("dirs")
+        event.cli.print_text(f"\n{dirstack.dirs([])[0]}\n")
         event.current_buffer.validate_and_handle()
 
     spaces = re.compile(r' +')
