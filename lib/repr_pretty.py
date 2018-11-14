@@ -16,6 +16,9 @@ def pil_wrapper(module=None, **kwargs):
 
 def rdkit_wrapper(module=None, **kwargs):
     from rdkit.Chem import Draw
+    from rdkit.Chem.rdDepictor import SetPreferCoordGen
+
+    SetPreferCoordGen(True)
 
     def _mol_repr_pretty_(self, p, cycle):
         p.text(_pil_to_image(Draw.MolToImage(self)))

@@ -1,4 +1,6 @@
 def initialize_xonsh():
+    $XONSH_SHOW_TRACEBACK = True
+
     import os
     import sys
     from functools import partial
