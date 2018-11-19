@@ -1,3 +1,4 @@
+import sys
 import os
 import json
 
@@ -6,17 +7,33 @@ from xonsh.lazyasd import lazyobject
 from utils import OneLineCache
 
 
-def conda(args, *, conda_path):
+def conda_activate(args):
+    if len(args) == 1:
+        conda = $(which --skip-alias conda)
+        source-bash $(@(conda) shell.posix activate @(args))
+        return
+
+    if len(args) == 2:
+        conda, env = args
+        source-bash $(@(conda) shell.posix activate @(env))
+        return
+
+    print("Usage: conda-activate [CONDA_PATH] ENV_NAME")
+    return sys.exit(1)
+
+
+def conda(args):
+    conda = $(which --skip-alias conda)
     if len(args) == 0:
-        @(conda_path)
+        @(conda)
         return
 
     if args[0] == 'activate':
-        source-bash $(@(conda_path) shell.posix activate @(args))
+        source-bash $(@(conda) shell.posix activate @(args))
     elif args[0] == 'deactivate':
-        source-bash $(@(conda_path) shell.posix deactivate)
+        source-bash $(@(conda) shell.posix deactivate)
     else:
-        @(conda_path) @(args)
+        @(conda) @(args)
 
 
 def env_name():

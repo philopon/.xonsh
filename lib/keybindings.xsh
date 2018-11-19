@@ -12,7 +12,7 @@ import fzf
 from common_prefix import common_prefix
 
 
-def custom_keybindings(bindings, *, fzf_path, ghq_path, conda_path, **kwargs):
+def custom_keybindings(bindings, *, fzf_path, ghq_path, **kwargs):
     @filters.Condition
     def can_partial_complete():
         buf = get_app().current_buffer
@@ -79,5 +79,6 @@ def custom_keybindings(bindings, *, fzf_path, ghq_path, conda_path, **kwargs):
 
     @bindings.add(Keys.ControlD, filter=no_input & in_conda_env)
     def conda_deactivate(event):
-        source-bash $(@(conda_path) shell.posix deactivate)
+        conda = $(which --skip-alias conda)
+        source-bash $(@(conda) shell.posix deactivate)
         event.current_buffer.validate_and_handle()

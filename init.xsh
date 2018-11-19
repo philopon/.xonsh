@@ -46,14 +46,11 @@ def initialize_xonsh():
         "/usr/local/bin",
     )
 
-    conda_path = $(which conda)
-
     from prompt import set_prompt
     set_prompt()
 
     from keybindings import custom_keybindings
-    events.on_ptk_create(partial(
-        custom_keybindings, fzf_path=fzf_path, ghq_path=ghq_path, conda_path=conda_path))
+    events.on_ptk_create(partial(custom_keybindings, fzf_path=fzf_path, ghq_path=ghq_path))
 
     import repr_pretty
     events.on_import_post_exec_module(repr_pretty.handler)
@@ -77,7 +74,8 @@ def initialize_xonsh():
     aliases['reset'] = reset
 
     aliases['source-bash'] = ["source-foreign", "bash", "--sourcer=source", "--extra-args=--norc"]
-    aliases['conda'] = partial(conda_wrapper.conda, conda_path=conda_path)
+    aliases['conda'] = conda_wrapper.conda
+    aliases['conda-activate'] = conda_wrapper.conda_activate
     __xonsh__.completers['conda'] = conda_wrapper.completer
     __xonsh__.completers.move_to_end('conda', False)
 
