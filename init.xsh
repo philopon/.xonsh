@@ -76,6 +76,7 @@ def initialize_xonsh():
 
     aliases['reset'] = reset
 
+    aliases['source-bash'] = ["source-foreign", "bash", "--sourcer=source", "--extra-args=--norc"]
     aliases['conda'] = partial(conda_wrapper.conda, conda_path=conda_path)
     __xonsh__.completers['conda'] = conda_wrapper.completer
     __xonsh__.completers.move_to_end('conda', False)
