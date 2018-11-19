@@ -16,7 +16,6 @@ def pip(pkg, pyname=None):
 def github_releases(bin_name, repo, **spec):
     import platform
     import requests
-    import github
     from io import BytesIO
     import re
 
