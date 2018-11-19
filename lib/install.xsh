@@ -1,4 +1,11 @@
 import os
+from logging import getLogger, StreamHandler, INFO
+
+
+logger = getLogger(__name__)
+logger.setLevel(INFO)
+logger.addHandler(StreamHandler())
+
 
 def pip(pkg, pyname=None):
     import importlib
@@ -6,43 +13,70 @@ def pip(pkg, pyname=None):
         xpip install @(pkg)
 
 
-def fzf(base):
-    bin = os.path.join(base, "bin", "fzf")
-    if os.path.isfile(bin):
-        return bin
-
-    installer = os.path.join(base, "install-fzf")
-    curl -L -o @(installer) https://raw.githubusercontent.com/junegunn/fzf/master/install
-    bash @(installer) --bin
-    os.remove(installer)
-    return bin
-
-
-def ghq(base):
-    bin = os.path.join(base, "bin", "ghq")
-    if os.path.isfile(bin):
-        return bin
-
+def github_releases(bin_name, repo, **spec):
     import platform
-    import zipfile
     import requests
     import github
     from io import BytesIO
+    import re
 
-    ghq_names = {
-        ("Darwin", ("64bit", "")): "ghq_darwin_amd64.zip",
-        ('Linux', ('64bit', '')): "ghq_linux_amd64.zip"
-    }
+    def wrap(install):
+        def installer(base):
+            bin_path = os.path.join(base, "bin", bin_name)
+            if os.path.isfile(bin_path):
+                return bin_path
 
-    name = ghq_names[(platform.system(), platform.architecture())]
-    for asset in github.latest("motemen", "ghq")["assets"]:
-        if asset["name"] == name:
-            break
-    else:
-        raise ValueError(f"no asset: {name}")
+            sys_arch = f"{platform.system().lower()}_{platform.machine()}"
 
-    resp = requests.get(asset["browser_download_url"])
-    with zipfile.ZipFile(BytesIO(resp.content)) as z:
-        path = z.extract("ghq", path=os.path.join(base, "bin"))
+            pattern = spec[sys_arch]
+            logger.info("installing {} ...".format(repo))
+
+            with requests.get(f"https://api.github.com/repos/{repo}/releases/latest") as r:
+                for asset in r.json()["assets"]:
+                    if re.match(pattern, asset["name"]):
+                        break
+                else:
+                    raise ValueError(f"no asset: {pattern}")
+
+            with requests.get(asset["browser_download_url"]) as resp:
+                install(BytesIO(resp.content), bin_path)
+                logger.info("installing {}: done".format(repo))
+                return bin_path
+
+        return installer
+    return wrap
+
+
+@github_releases(
+    "ghq", "motemen/ghq",
+    darwin_x86_64=r"ghq_darwin_amd64\.zip",
+    linux_x86_64=r"ghq_linux_amd64\.zip",
+)
+def ghq(content, bin_path):
+    import zipfile
+    with zipfile.ZipFile(content) as z:
+        path = z.extract(os.path.basename(bin_path), path=os.path.dirname(bin_path))
     os.chmod(path, 0o755)
-    return path
+
+
+@github_releases(
+    "fzf", "junegunn/fzf-bin",
+    darwin_x86_64=r"fzf-.+-darwin_amd64\.tgz",
+    linux_x86_64=r"fzf-.+-linux_amd64\.tgz",
+)
+def fzf(content, bin_path):
+    import tarfile
+    with tarfile.open(mode="r:gz", fileobj=content) as t:
+        t.extract(os.path.basename(bin_path), path=os.path.dirname(bin_path))
+    os.chmod(bin_path, 0o755)
+
+
+@github_releases("jq", "stedolan/jq",
+    darwin_x86_64=r"jq-osx-amd64",
+    linux_x86_64=r"jq-linux64",
+)
+def jq(content, bin_path):
+    import shutil
+    with open(bin_path, "wb") as dst:
+        shutil.copyfileobj(content, dst)
+    os.chmod(bin_path, 0o755)

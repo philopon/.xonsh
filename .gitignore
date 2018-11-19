@@ -1,4 +1,5 @@
 /bin/fzf
 /bin/ghq
+/bin/jq
 /.vscode
 __pycache__/
