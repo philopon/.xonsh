@@ -20,7 +20,7 @@ def initialize_xonsh():
 
     fzf_path = install.fzf(XONSH_BASE_DIR)
     ghq_path = install.ghq(XONSH_BASE_DIR)
-    ghq_path = install.jq(XONSH_BASE_DIR)
+    jq_path = install.jq(XONSH_BASE_DIR)
 
     import conda_wrapper
 
