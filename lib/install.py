@@ -17,6 +17,7 @@ def pip(pkg, pyname=None):
 def github_releases(bin_name, repo, **spec):
     import platform
     import requests
+    from tqdm import tqdm
     from io import BytesIO
     import re
 
@@ -38,10 +39,17 @@ def github_releases(bin_name, repo, **spec):
                 else:
                     raise ValueError(f"no asset: {pattern}")
 
-            with requests.get(asset["browser_download_url"]) as resp:
-                install(BytesIO(resp.content), bin_path)
-                logger.info("installing {}: done".format(repo))
-                return bin_path
+            with requests.get(asset["browser_download_url"], stream=True) as resp, tqdm(total=int(resp.headers["Content-Length"]), unit="B", unit_scale=True, leave=False) as prog:
+
+                bio = BytesIO()
+                for chunk in resp.iter_content(chunk_size=10240):
+                    bio.write(chunk)
+                    prog.update(len(chunk))
+
+                install(bio, bin_path)
+
+            logger.info("installing {} done".format(repo))
+            return bin_path
 
         return installer
     return wrap

@@ -15,6 +15,7 @@ def initialize_xonsh():
     install.pip("numpy")
     install.pip("matplotlib")
     install.pip("iterm2_tools")
+    install.pip("tqdm")
     install.pip("pillow", "PIL")
 
     install.ghq(XONSH_BASE_DIR)

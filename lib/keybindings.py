@@ -9,7 +9,7 @@ from xonsh.aliases import xonsh_exit
 
 import selector
 import conda_wrapper
-from common_prefix import common_prefix
+from utils import common_prefix
 
 
 def custom_keybindings(bindings, **kwargs):
