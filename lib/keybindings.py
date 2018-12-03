@@ -1,4 +1,3 @@
-from functools import partial
 import re
 
 from prompt_toolkit.keys import Keys
@@ -8,11 +7,12 @@ from prompt_toolkit.application.current import get_app
 from xonsh import dirstack
 from xonsh.aliases import xonsh_exit
 
-import fzf
+import selector
+import conda_wrapper
 from common_prefix import common_prefix
 
 
-def custom_keybindings(bindings, *, fzf_path, ghq_path, **kwargs):
+def custom_keybindings(bindings, **kwargs):
     @filters.Condition
     def can_partial_complete():
         buf = get_app().current_buffer
@@ -27,8 +27,8 @@ def custom_keybindings(bindings, *, fzf_path, ghq_path, **kwargs):
     def no_input():
         return get_app().current_buffer.text == ""
 
-    bindings.add(Keys.ControlG)(partial(fzf.ghq, ghq=ghq_path, fzf=fzf_path))
-    bindings.add(Keys.ControlR)(partial(fzf.history, fzf=fzf_path))
+    bindings.add(Keys.ControlG)(selector.ghq)
+    bindings.add(Keys.ControlR)(selector.history)
 
     @bindings.add(Keys.ControlB, filter=no_input)
     def popd(event):
@@ -79,6 +79,5 @@ def custom_keybindings(bindings, *, fzf_path, ghq_path, **kwargs):
 
     @bindings.add(Keys.ControlD, filter=no_input & in_conda_env)
     def conda_deactivate(event):
-        conda = $(which --skip-alias conda)
-        source-bash $(@(conda) shell.posix deactivate)
+        conda_wrapper.deactivate()
         event.current_buffer.validate_and_handle()

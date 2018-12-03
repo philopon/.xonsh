@@ -1,6 +1,7 @@
 import os
 from logging import getLogger, StreamHandler, INFO
 
+from xonsh.built_ins import run_subproc
 
 logger = getLogger(__name__)
 logger.setLevel(INFO)
@@ -10,7 +11,7 @@ logger.addHandler(StreamHandler())
 def pip(pkg, pyname=None):
     import importlib
     if not importlib.util.find_spec(pyname or pkg):
-        xpip install @(pkg)
+        run_subproc([["xpip", "install", pkg]])
 
 
 def github_releases(bin_name, repo, **spec):
@@ -78,4 +79,21 @@ def jq(content, bin_path):
     import shutil
     with open(bin_path, "wb") as dst:
         shutil.copyfileobj(content, dst)
+    os.chmod(bin_path, 0o755)
+
+
+@github_releases("peco", "peco/peco",
+    darwin_x86_64=r"peco_darwin_amd64\.zip",
+    linux_x86_64=r"peco_linux_amd64\.tar\.gz",
+)
+def peco(content, bin_path):
+    import zipfile
+    import shutil
+
+    with zipfile.ZipFile(content) as z:
+        shutil.copyfileobj(
+            z.open([name for name in z.namelist() if os.path.basename(name) == os.path.basename(bin_path)][0]),
+            open(bin_path, "wb"),
+        )
+
     os.chmod(bin_path, 0o755)

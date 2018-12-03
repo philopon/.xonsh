@@ -6,34 +6,54 @@ from xonsh.lazyasd import lazyobject
 
 from utils import OneLineCache
 
+from xonsh.built_ins import run_subproc
+
 
 def conda_activate(args):
     if len(args) == 1:
-        conda = $(which --skip-alias conda)
-        source-bash $(@(conda) shell.posix activate @(args))
-        return
+        return activate(args[0])
 
     if len(args) == 2:
         conda, env = args
-        source-bash $(@(conda) shell.posix activate @(env))
-        return
+        return activate(env, conda)
 
-    print("Usage: conda-activate [CONDA_PATH] ENV_NAME")
-    return sys.exit(1)
+    else:
+        print("Usage: conda-activate [CONDA_PATH] ENV_NAME")
+        sys.exit(1)
+
+
+def which_conda():
+    return run_subproc([["which", "--skip-alias", "conda"]], captured="stdout")
+
+
+def activate(env, conda=None):
+    if conda is None:
+        conda = which_conda()
+
+    bash = run_subproc([[conda, 'shell.posix', 'activate', env]], captured="stdout")
+    run_subproc([["source-bash", bash]])
+
+
+def deactivate(conda=None):
+    if conda is None:
+        conda = which_conda()
+
+    bash = run_subproc([[conda, 'shell.posix', 'deactivate']], captured="stdout")
+    run_subproc([["source-bash", bash]])
 
 
 def conda(args):
-    conda = $(which --skip-alias conda)
+    conda = which_conda()
     if len(args) == 0:
-        @(conda)
+        run_subproc([[conda]])
         return
 
     if args[0] == 'activate':
-        source-bash $(@(conda) shell.posix activate @(args))
+        activate(args[1], conda)
     elif args[0] == 'deactivate':
-        source-bash $(@(conda) shell.posix deactivate)
+        deactivate(conda)
     else:
-        @(conda) @(args)
+        run_subproc([[conda] + args])
 
 
 def env_name():
@@ -56,7 +76,8 @@ def CONDA_COMMANDS():
 
 
 def get_conda_envs():
-    result = $(conda env list --json)
+    conda = run_subproc([["which", "--skip-alias", "conda"]], captured="stdout")
+    result = run_subproc([[conda, 'env', 'list', '--json']], captured="stdout")
     envs = json.loads(result)["envs"]
     return frozenset(map(os.path.basename, envs))
 

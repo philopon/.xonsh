@@ -3,7 +3,6 @@ def initialize_xonsh():
 
     import os
     import sys
-    from functools import partial
 
     XONSH_BASE_DIR = os.path.expanduser("~/.xonsh")
     sys.path.append(os.path.join(XONSH_BASE_DIR, "lib"))
@@ -18,9 +17,9 @@ def initialize_xonsh():
     install.pip("iterm2_tools")
     install.pip("pillow", "PIL")
 
-    fzf_path = install.fzf(XONSH_BASE_DIR)
-    ghq_path = install.ghq(XONSH_BASE_DIR)
-    jq_path = install.jq(XONSH_BASE_DIR)
+    install.ghq(XONSH_BASE_DIR)
+    install.jq(XONSH_BASE_DIR)
+    install.peco(XONSH_BASE_DIR)
 
     import conda_wrapper
 
@@ -51,7 +50,7 @@ def initialize_xonsh():
     set_prompt()
 
     from keybindings import custom_keybindings
-    events.on_ptk_create(partial(custom_keybindings, fzf_path=fzf_path, ghq_path=ghq_path))
+    events.on_ptk_create(custom_keybindings)
 
     import repr_pretty
     events.on_import_post_exec_module(repr_pretty.handler)

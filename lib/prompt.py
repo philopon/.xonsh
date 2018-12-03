@@ -4,7 +4,7 @@ from subprocess import SubprocessError
 
 
 def set_prompt():
-    $PROMPT = (
+    __xonsh__.env["PROMPT"] = (
         '{env_name:{}}'
         '{BOLD_#5f5f5f}{puser}{ssh_color}@{phostname} '
         '{BOLD_#d78700}{cwd}'
@@ -35,13 +35,13 @@ def set_prompt():
         20: "⓴",
     }
 
-    $PRIVATE = False
+    __xonsh__.env["PRIVATE"] = False
 
     def puser():
-        return "XXXXX" if $PRIVATE else $PROMPT_FIELDS["user"]
+        return "XXXXX" if __xonsh__.env["PRIVATE"] else __xonsh__.env["PROMPT_FIELDS"]["user"]
 
     def phostname():
-        return "XXXXX" if $PRIVATE else $PROMPT_FIELDS["hostname"]
+        return "XXXXX" if __xonsh__.env["PRIVATE"] else __xonsh__.env["PROMPT_FIELDS"]["hostname"]
 
     def git_info():
         try:
@@ -59,7 +59,7 @@ def set_prompt():
             return None
 
     def ssh_color():
-        return '{BOLD_#ff5f5f}' if 'SSH_CONNECTION' in ${...} else ''
+        return '{BOLD_#ff5f5f}' if 'SSH_CONNECTION' in __xonsh__.env else ''
 
     def prompt_end_color():
         if len(__xonsh__.history) > 0 and __xonsh__.history[-1].rtn != 0:
@@ -67,9 +67,9 @@ def set_prompt():
         else:
             return "{BOLD_#00d700}"
 
-    $PROMPT_FIELDS['env_name'] = conda_wrapper.env_name
-    $PROMPT_FIELDS['ssh_color'] = ssh_color
-    $PROMPT_FIELDS['prompt_end_color'] = prompt_end_color
-    $PROMPT_FIELDS['git_info'] = git_info
-    $PROMPT_FIELDS['puser'] = puser
-    $PROMPT_FIELDS['phostname'] = phostname
+    __xonsh__.env["PROMPT_FIELDS"]['env_name'] = conda_wrapper.env_name
+    __xonsh__.env["PROMPT_FIELDS"]['ssh_color'] = ssh_color
+    __xonsh__.env["PROMPT_FIELDS"]['prompt_end_color'] = prompt_end_color
+    __xonsh__.env["PROMPT_FIELDS"]['git_info'] = git_info
+    __xonsh__.env["PROMPT_FIELDS"]['puser'] = puser
+    __xonsh__.env["PROMPT_FIELDS"]['phostname'] = phostname

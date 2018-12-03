@@ -1,4 +1,5 @@
 /bin/fzf
+/bin/peco
 /bin/ghq
 /bin/jq
 /.vscode
