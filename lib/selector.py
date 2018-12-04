@@ -26,6 +26,9 @@ def history(event):
         for i, h in enumerate(history)
     ))
 
+    if index == b"":
+        return
+
     choice = history[int(index)]["inp"]
     event.cli.renderer.erase()
     event.current_buffer.insert_text(choice)
