@@ -15,14 +15,14 @@ def pip(pkg, pyname=None):
 
 
 def github_releases(bin_name, repo, **spec):
-    import platform
-    import requests
-    from tqdm import tqdm
-    from io import BytesIO
-    import re
-
     def wrap(install):
         def installer(base):
+            import platform
+            import requests
+            from tqdm import tqdm
+            from io import BytesIO
+            import re
+
             bin_path = os.path.join(base, "bin", bin_name)
             if os.path.isfile(bin_path):
                 return bin_path
@@ -45,6 +45,8 @@ def github_releases(bin_name, repo, **spec):
                 for chunk in resp.iter_content(chunk_size=10240):
                     bio.write(chunk)
                     prog.update(len(chunk))
+
+                bio.name = asset["name"]
 
                 install(bio, bin_path)
 
@@ -95,13 +97,22 @@ def jq(content, bin_path):
     linux_x86_64=r"peco_linux_amd64\.tar\.gz",
 )
 def peco(content, bin_path):
-    import zipfile
     import shutil
+    if content.name.endswith(".zip"):
+        import zipfile
+        with zipfile.ZipFile(content) as z:
+            shutil.copyfileobj(
+                z.open([name for name in z.namelist() if os.path.basename(name) == os.path.basename(bin_path)][0]),
+                open(bin_path, "wb"),
+            )
 
-    with zipfile.ZipFile(content) as z:
-        shutil.copyfileobj(
-            z.open([name for name in z.namelist() if os.path.basename(name) == os.path.basename(bin_path)][0]),
-            open(bin_path, "wb"),
-        )
+    if content.name.endswith(".tar.gz"):
+        import tarfile
+        with tarfile.open(mode="r:gz", fileobj=content) as t:
+            shutil.copyfileobj(
+                t.extractfile([name for name in t.getnames() if os.path.basename(name) == os.path.name(bin_path)][0]),
+                open(bin_path, "wb")
+            )
 
     os.chmod(bin_path, 0o755)
+
