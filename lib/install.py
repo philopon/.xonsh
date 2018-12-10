@@ -39,7 +39,7 @@ def github_releases(bin_name, repo, **spec):
                 else:
                     raise ValueError(f"no asset: {pattern}")
 
-            with requests.get(asset["browser_download_url"], stream=True) as resp, tqdm(total=int(resp.headers["Content-Length"]), unit="B", unit_scale=True, leave=False) as prog:
+            with requests.get(asset["browser_download_url"], stream=True) as resp, tqdm(total=int(resp.headers["Content-Length"]), unit="B", unit_scale=True) as prog:
 
                 bio = BytesIO()
                 for chunk in resp.iter_content(chunk_size=10240):
@@ -47,6 +47,7 @@ def github_releases(bin_name, repo, **spec):
                     prog.update(len(chunk))
 
                 bio.name = asset["name"]
+                bio.seek(0)
 
                 install(bio, bin_path)
 
@@ -110,7 +111,7 @@ def peco(content, bin_path):
         import tarfile
         with tarfile.open(mode="r:gz", fileobj=content) as t:
             shutil.copyfileobj(
-                t.extractfile([name for name in t.getnames() if os.path.basename(name) == os.path.name(bin_path)][0]),
+                t.extractfile([name for name in t.getnames() if os.path.basename(name) == os.path.basename(bin_path)][0]),
                 open(bin_path, "wb")
             )
 
