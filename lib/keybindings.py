@@ -58,7 +58,11 @@ def custom_keybindings(bindings, **kwargs):
     def complete_common_on_tab(event):
         buf = event.current_buffer
         buf.start_completion()
-        comp = buf.complete_state.completions
+        state = buf.complete_state
+        if state is None:
+            return
+
+        comp = state.completions
         if len(comp) == 0:
             return
 
