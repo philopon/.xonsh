@@ -2,5 +2,6 @@
 /bin/peco
 /bin/ghq
 /bin/jq
+/bin/pbcopy
 /.vscode
 __pycache__/

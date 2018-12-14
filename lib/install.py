@@ -117,3 +117,17 @@ def peco(content, bin_path):
 
     os.chmod(bin_path, 0o755)
 
+
+def it2copy(base):
+    import requests
+
+    bin_path = os.path.join(base, "bin", "pbcopy")
+    if os.path.isfile(bin_path):
+        return bin_path
+
+    with requests.get(f"https://iterm2.com/utilities/it2copy", stream=True) as resp, open(bin_path, "wb") as o:
+        for chunk in resp.iter_content(chunk_size=10240):
+            o.write(chunk)
+
+    os.chmod(bin_path, 0o755)
+    return bin_path

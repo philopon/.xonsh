@@ -21,6 +21,7 @@ def initialize_xonsh():
     install.ghq(XONSH_BASE_DIR)
     install.jq(XONSH_BASE_DIR)
     install.peco(XONSH_BASE_DIR)
+    install.it2copy(XONSH_BASE_DIR)
 
     import conda_wrapper
 
@@ -30,7 +31,6 @@ def initialize_xonsh():
     $COMPLETIONS_MENU_ROWS = 20
     $DIRSTACK_SIZE = 50
     $XONSH_HISTORY_SIZE = (20 * 1024, 'commands')
-    $XONSH_AUTOPAIR = True
     $CASE_SENSITIVE_COMPLETIONS = True
     $SUBSEQUENCE_PATH_COMPLETION = False
 
@@ -43,6 +43,7 @@ def initialize_xonsh():
     utils.add_PATH(
         os.path.join(XONSH_BASE_DIR, "bin"),
         "~/miniconda3/bin",
+        "~/.config/yarn/global/node_modules/.bin",
         "~/.cargo/bin",
         "/usr/local/bin",
     )
