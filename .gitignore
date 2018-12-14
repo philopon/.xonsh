@@ -1,7 +1,3 @@
-/bin/fzf
-/bin/peco
-/bin/ghq
-/bin/jq
-/bin/pbcopy
+/bin/
 /.vscode
 __pycache__/

@@ -1,3 +1,4 @@
+import os
 import re
 
 from prompt_toolkit.keys import Keys
@@ -34,6 +35,11 @@ def custom_keybindings(bindings, **kwargs):
     def popd(event):
         dirstack.popd([])
         event.cli.print_text(f"\n{dirstack.dirs([])[0]}\n")
+        event.current_buffer.validate_and_handle()
+
+    @bindings.add(Keys.ControlU, filter=no_input)
+    def go_up(event):
+        dirstack.cd([os.path.dirname(__xonsh__.env['PWD'])])
         event.current_buffer.validate_and_handle()
 
     spaces = re.compile(r' +')

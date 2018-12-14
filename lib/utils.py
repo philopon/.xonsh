@@ -1,5 +1,6 @@
 import os
 import warnings
+from contextlib import contextmanager
 
 from xonsh.lazyasd import lazyobject
 
@@ -64,3 +65,13 @@ def common_prefix(cands):
             return ""
 
     return p
+
+
+@contextmanager
+def workdir(wd):
+    cwd = os.getcwd()
+    os.chdir(wd)
+    try:
+        yield
+    finally:
+        os.chdir(cwd)

@@ -121,7 +121,7 @@ def peco(content, bin_path):
 def it2copy(base):
     import requests
 
-    bin_path = os.path.join(base, "bin", "pbcopy")
+    bin_path = os.path.join(base, "bin", "it2copy")
     if os.path.isfile(bin_path):
         return bin_path
 

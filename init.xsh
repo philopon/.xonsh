@@ -21,7 +21,7 @@ def initialize_xonsh():
     install.ghq(XONSH_BASE_DIR)
     install.jq(XONSH_BASE_DIR)
     install.peco(XONSH_BASE_DIR)
-    install.it2copy(XONSH_BASE_DIR)
+    it2copy = install.it2copy(XONSH_BASE_DIR)
 
     import conda_wrapper
 
@@ -41,6 +41,7 @@ def initialize_xonsh():
     import utils
 
     utils.add_PATH(
+        os.path.join(XONSH_BASE_DIR, "local_bin"),
         os.path.join(XONSH_BASE_DIR, "bin"),
         "~/miniconda3/bin",
         "~/.config/yarn/global/node_modules/.bin",
@@ -73,7 +74,12 @@ def initialize_xonsh():
         xonsh-reset
         initialize_variables()
 
+    def pull_xonshrc(args):
+        with utils.workdir(XONSH_BASE_DIR):
+            git pull
+
     aliases['reset'] = reset
+    aliases['pull-xonshrc'] = pull_xonshrc
 
     aliases['source-bash'] = ["source-foreign", "bash", "--sourcer=source", "--extra-args=--norc"]
     aliases['conda'] = conda_wrapper.conda
@@ -85,8 +91,10 @@ def initialize_xonsh():
     if os.path.isfile(xconda):
         aliases['xconda'] = xconda
 
+    aliases['la'] = 'ls -a'
     aliases['ll'] = 'ls -l'
     aliases['llh'] = 'ls -lh'
+    aliases["pbcopy"] = it2copy
 
 
 initialize_xonsh()
