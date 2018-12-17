@@ -14,11 +14,14 @@ def add_PATH(*paths):
             warnings.warn(f"{path} is not fould. skip adding to PATH")
 
 
-def lazymodule(name):
+def lazymodule(name, base=None):
     @lazyobject
     def module():
         import importlib
-        return importlib.import_module(name)
+        if base is not None:
+            return getattr(importlib.import_module(base), name)
+        else:
+            return importlib.import_module(name)
 
     return module
 

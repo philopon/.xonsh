@@ -66,6 +66,8 @@ def initialize_xonsh():
     def initialize_variables():
         globals().update([
             ("np", utils.lazymodule("numpy")),
+            ("tqdm", utils.lazymodule("tqdm", "tqdm")),
+            ("os", utils.lazymodule("os")),
         ])
 
     initialize_variables()
