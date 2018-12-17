@@ -21,6 +21,7 @@ def initialize_xonsh():
     install.ghq(XONSH_BASE_DIR)
     install.jq(XONSH_BASE_DIR)
     install.peco(XONSH_BASE_DIR)
+    install.ripgrep(XONSH_BASE_DIR)
     it2copy = install.it2copy(XONSH_BASE_DIR)
 
     import conda_wrapper

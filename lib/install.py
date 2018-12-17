@@ -32,8 +32,8 @@ def github_releases(bin_name, repo, **spec):
             pattern = spec[sys_arch]
             logger.info("installing {} ...".format(repo))
 
-            with requests.get(f"https://api.github.com/repos/{repo}/releases/latest") as r:
-                for asset in r.json()["assets"]:
+            with requests.get(f"https://api.github.com/repos/{repo}/releases") as r:
+                for asset in (asset for rel in r.json() for asset in rel["assets"]):
                     if re.match(pattern, asset["name"]):
                         break
                 else:
@@ -110,6 +110,22 @@ def peco(content, bin_path):
     if content.name.endswith(".tar.gz"):
         import tarfile
         with tarfile.open(mode="r:gz", fileobj=content) as t:
+            shutil.copyfileobj(
+                t.extractfile([name for name in t.getnames() if os.path.basename(name) == os.path.basename(bin_path)][0]),
+                open(bin_path, "wb")
+            )
+
+    os.chmod(bin_path, 0o755)
+
+
+@github_releases("rg", "BurntSushi/ripgrep",
+    darwin_x86_64=r"ripgrep-[0-9.]+-x86_64-apple-darwin\.tar\.gz",
+    linux_x86_64=r"ripgrep-[0-9.]+-x86_64-unknown-linux-musl\.tar\.gz",
+)
+def ripgrep(content, bin_path):
+    import shutil
+    import tarfile
+    with tarfile.open(mode="r:gz", fileobj=content) as t:
             shutil.copyfileobj(
                 t.extractfile([name for name in t.getnames() if os.path.basename(name) == os.path.basename(bin_path)][0]),
                 open(bin_path, "wb")
