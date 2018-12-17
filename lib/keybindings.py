@@ -15,12 +15,6 @@ from utils import common_prefix
 
 def custom_keybindings(bindings, **kwargs):
     @filters.Condition
-    def can_partial_complete():
-        buf = get_app().current_buffer
-        s = buf.suggestion
-        return s and ' ' in s.text
-
-    @filters.Condition
     def in_conda_env():
         return "CONDA_DEFAULT_ENV" in __xonsh__.env
 
@@ -42,13 +36,19 @@ def custom_keybindings(bindings, **kwargs):
         dirstack.cd([os.path.dirname(__xonsh__.env['PWD'])])
         event.current_buffer.validate_and_handle()
 
-    spaces = re.compile(r' +')
+    re_partial_complete = re.compile(r'(.+?)([ /:]|$)+')
 
-    @bindings.add(Keys.ControlF, filter=can_partial_complete)
+    @bindings.add(Keys.ControlF)
     def partial_complete(event):
         buf = event.current_buffer
-        s = spaces.split(buf.suggestion.text)
-        buf.insert_text((' ' + s[1] if s[0] == '' else s[0]) + " ")
+        if buf.suggestion is None:
+            return buf.cursor_right()
+
+        s = re_partial_complete.match(buf.suggestion.text)
+        if s is None:
+            return buf.cursor_right()
+
+        buf.insert_text(s.group(1) + s.group(2))
 
     @bindings.add('/', filter=filters.has_completions)
     def apply_on_slash(event):
