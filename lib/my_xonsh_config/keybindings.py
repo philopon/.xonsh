@@ -8,9 +8,9 @@ from prompt_toolkit.application.current import get_app
 from xonsh import dirstack
 from xonsh.aliases import xonsh_exit
 
-import selector
-import conda_wrapper
-from utils import common_prefix
+from . import selector
+from . import conda_wrapper
+from .utils import common_prefix
 
 
 def custom_keybindings(bindings, **kwargs):

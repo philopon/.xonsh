@@ -7,7 +7,7 @@ def initialize_xonsh():
     XONSH_BASE_DIR = os.path.expanduser("~/.xonsh")
     sys.path.append(os.path.join(XONSH_BASE_DIR, "lib"))
 
-    import install
+    from my_xonsh_config import install
 
     install.pip("prompt_toolkit")
     install.pip("pygments")
@@ -24,7 +24,7 @@ def initialize_xonsh():
     install.ripgrep(XONSH_BASE_DIR)
     it2copy = install.it2copy(XONSH_BASE_DIR)
 
-    import conda_wrapper
+    from my_xonsh_config import conda_wrapper
 
     $XONSH_HISTORY_BACKEND = 'sqlite'
     $AUTO_CD = True
@@ -39,7 +39,7 @@ def initialize_xonsh():
     $HOMEBREW_NO_AUTO_UPDATE = 1
     $COLOR_RESULTS = False
 
-    import utils
+    from my_xonsh_config import utils
 
     utils.add_PATH(
         os.path.join(XONSH_BASE_DIR, "local_bin"),
@@ -50,13 +50,13 @@ def initialize_xonsh():
         "/usr/local/bin",
     )
 
-    from prompt import set_prompt
+    from my_xonsh_config.prompt import set_prompt
     set_prompt()
 
-    from keybindings import custom_keybindings
+    from my_xonsh_config.keybindings import custom_keybindings
     events.on_ptk_create(custom_keybindings)
 
-    import repr_pretty
+    from my_xonsh_config import repr_pretty
     events.on_import_post_exec_module(repr_pretty.handler)
 
     @events.on_import_post_exec_module

@@ -1,4 +1,4 @@
-import conda_wrapper
+from . import conda_wrapper
 from xonsh.prompt.gitstatus import gitstatus
 from subprocess import SubprocessError
 

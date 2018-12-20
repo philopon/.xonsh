@@ -4,7 +4,7 @@ import json
 
 from xonsh.lazyasd import lazyobject
 
-from utils import OneLineCache
+from .utils import OneLineCache
 
 from xonsh.built_ins import run_subproc
 

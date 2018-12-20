@@ -9,6 +9,7 @@ def _pil_to_image(pil):
 
 def pil_wrapper(module=None, **kwargs):
     def _pil_repr_pretty_(self, p, cycle):
+        p.color_results = False
         p.text(_pil_to_image(self))
 
     module.Image._repr_pretty_ = _pil_repr_pretty_
@@ -21,6 +22,7 @@ def rdkit_wrapper(module=None, **kwargs):
     SetPreferCoordGen(True)
 
     def _mol_repr_pretty_(self, p, cycle):
+        p.color_results = False
         p.text(_pil_to_image(Draw.MolToImage(self)))
 
     module.Mol._repr_pretty_ = _mol_repr_pretty_
