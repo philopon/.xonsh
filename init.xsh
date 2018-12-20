@@ -42,7 +42,6 @@ def initialize_xonsh():
     from my_xonsh_config import utils
 
     utils.add_PATH(
-        os.path.join(XONSH_BASE_DIR, "local_bin"),
         os.path.join(XONSH_BASE_DIR, "bin"),
         "~/miniconda3/bin",
         "~/.config/yarn/global/node_modules/.bin",
@@ -73,6 +72,9 @@ def initialize_xonsh():
 
     initialize_variables()
 
+    def local_command(name, base=os.path.join(XONSH_BASE_DIR, "cmd"), exec=sys.executable):
+        return [exec, os.path.join(base, name)]
+
     def reset(args):
         xonsh-reset
         initialize_variables()
@@ -83,6 +85,8 @@ def initialize_xonsh():
 
     aliases['reset'] = reset
     aliases['pull-xonshrc'] = pull_xonshrc
+    aliases['touchnb'] = local_command("touchnb.py")
+    aliases['color'] = local_command("color.py")
 
     aliases['source-bash'] = ["source-foreign", "bash", "--sourcer=source", "--extra-args=--norc"]
     aliases['conda'] = conda_wrapper.conda
