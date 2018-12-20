@@ -22,8 +22,8 @@ def custom_keybindings(bindings, **kwargs):
     def no_input():
         return get_app().current_buffer.text == ""
 
-    bindings.add(Keys.ControlG)(selector.ghq)
-    bindings.add(Keys.ControlR)(selector.history)
+    bindings.add(Keys.ControlG, filter=no_input)(selector.ghq)
+    bindings.add(Keys.ControlR, filter=no_input)(selector.history)
 
     @bindings.add(Keys.ControlB, filter=no_input)
     def popd(event):
