@@ -1,8 +1,15 @@
 import os
 import warnings
 from contextlib import contextmanager
+import shutil
 
 from xonsh.lazyasd import lazyobject
+
+
+def which(cmd, path=None):
+    if path is None:
+        path = ":".join(__xonsh__.env["PATH"])
+    return shutil.which(cmd, path=path)
 
 
 def add_PATH(*paths):

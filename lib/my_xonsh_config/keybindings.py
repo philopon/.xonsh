@@ -24,6 +24,7 @@ def custom_keybindings(bindings, **kwargs):
 
     bindings.add(Keys.ControlG, filter=no_input)(selector.ghq)
     bindings.add(Keys.ControlR, filter=no_input)(selector.history)
+    bindings.add(Keys.ControlS, filter=no_input)(selector.ssh)
 
     @bindings.add(Keys.ControlB, filter=no_input)
     def popd(event):

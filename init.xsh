@@ -83,6 +83,11 @@ def initialize_xonsh():
         with utils.workdir(XONSH_BASE_DIR):
             git pull
 
+    vi = utils.which("nvim") or utils.which('vim')
+    if vi is not None:
+        aliases["vi"] = vi
+        aliases["vim"] = vi
+
     aliases['reset'] = reset
     aliases['pull-xonshrc'] = pull_xonshrc
     aliases['touchnb'] = local_command("touchnb.py")
