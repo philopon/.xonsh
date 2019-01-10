@@ -92,6 +92,7 @@ def initialize_xonsh():
     aliases['pull-xonshrc'] = pull_xonshrc
     aliases['touchnb'] = local_command("touchnb.py")
     aliases['color'] = local_command("color.py")
+    aliases['xpython'] = sys.executable
 
     aliases['source-bash'] = ["source-foreign", "bash", "--sourcer=source", "--extra-args=--norc"]
     aliases['conda'] = conda_wrapper.conda
