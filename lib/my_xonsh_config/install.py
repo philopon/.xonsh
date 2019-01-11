@@ -147,3 +147,18 @@ def it2copy(base):
 
     os.chmod(bin_path, 0o755)
     return bin_path
+
+
+def trans(base):
+    import requests
+    bin_path = os.path.join(base, "bin", "trans")
+    if os.path.isfile(bin_path):
+        return bin_path
+
+    with requests.get(f"https://git.io/trans", stream=True) as resp, open(bin_path, "wb") as o:
+        for chunk in resp.iter_content(chunk_size=10240):
+            o.write(chunk)
+
+    os.chmod(bin_path, 0o755)
+    return bin_path
+

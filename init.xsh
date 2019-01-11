@@ -22,6 +22,7 @@ def initialize_xonsh():
     install.jq(XONSH_BASE_DIR)
     install.peco(XONSH_BASE_DIR)
     install.ripgrep(XONSH_BASE_DIR)
+    trans = install.trans(XONSH_BASE_DIR)
     it2copy = install.it2copy(XONSH_BASE_DIR)
 
     from my_xonsh_config import conda_wrapper
@@ -92,7 +93,10 @@ def initialize_xonsh():
     aliases['pull-xonshrc'] = pull_xonshrc
     aliases['touchnb'] = local_command("touchnb.py")
     aliases['color'] = local_command("color.py")
+    aliases['plain'] = local_command("plain.py")
     aliases['xpython'] = sys.executable
+    aliases['xonsh'] = [sys.executable, '-m', 'xonsh']
+    aliases['trans'] = [trans, '-show-translation-phonetics=n', '-show-prompt-message=n', '-show-languages=n', '-show-alternatives=n']
 
     aliases['source-bash'] = ["source-foreign", "bash", "--sourcer=source", "--extra-args=--norc"]
     aliases['conda'] = conda_wrapper.conda
