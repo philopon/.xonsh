@@ -17,6 +17,8 @@ def initialize_xonsh():
     install.pip("iterm2_tools")
     install.pip("tqdm")
     install.pip("pip_review")
+    install.pip("watchdog")
+    install.pip("click")
     install.pip("pillow", "PIL")
 
     install.ghq(XONSH_BASE_DIR)
@@ -88,7 +90,7 @@ def initialize_xonsh():
 
     def dbxcli_put(args=()):
         for f in args:
-            @(dbxcli) put @(f) /box/@(f)
+            @(dbxcli) put @(f) /post/@(f)
 
     vi = utils.which("nvim") or utils.which('vim')
     if vi is not None:
@@ -127,7 +129,7 @@ def initialize_xonsh():
     aliases['ll'] = 'ls -l'
     aliases['llh'] = 'ls -lh'
     aliases["pbcopy"] = it2copy
-    aliases["box"] = dbxcli_put
+    aliases["put"] = dbxcli_put
 
 
 initialize_xonsh()
