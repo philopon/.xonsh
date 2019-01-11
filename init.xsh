@@ -23,6 +23,7 @@ def initialize_xonsh():
     install.jq(XONSH_BASE_DIR)
     install.peco(XONSH_BASE_DIR)
     install.ripgrep(XONSH_BASE_DIR)
+    dbxcli = install.dbxcli(XONSH_BASE_DIR)
     trans = install.trans(XONSH_BASE_DIR)
     it2copy = install.it2copy(XONSH_BASE_DIR)
 
@@ -85,6 +86,10 @@ def initialize_xonsh():
         with utils.workdir(XONSH_BASE_DIR):
             git pull
 
+    def dbxcli_put(args=()):
+        for f in args:
+            @(dbxcli) put @(f) /box/@(f)
+
     vi = utils.which("nvim") or utils.which('vim')
     if vi is not None:
         aliases["vi"] = vi
@@ -122,6 +127,7 @@ def initialize_xonsh():
     aliases['ll'] = 'ls -l'
     aliases['llh'] = 'ls -lh'
     aliases["pbcopy"] = it2copy
+    aliases["box"] = dbxcli_put
 
 
 initialize_xonsh()

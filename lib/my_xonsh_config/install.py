@@ -93,6 +93,17 @@ def jq(content, bin_path):
     os.chmod(bin_path, 0o755)
 
 
+@github_releases("dbxcli", "dropbox/dbxcli",
+    darwin_x86_64=r"dbxcli-darwin-amd64",
+    linux_x86_64=r"dbxcli-linux-amd64",
+)
+def dbxcli(content, bin_path):
+    import shutil
+    with open(bin_path, "wb") as dst:
+        shutil.copyfileobj(content, dst)
+    os.chmod(bin_path, 0o755)
+
+
 @github_releases("peco", "peco/peco",
     darwin_x86_64=r"peco_darwin_amd64\.zip",
     linux_x86_64=r"peco_linux_amd64\.tar\.gz",
@@ -161,4 +172,3 @@ def trans(base):
 
     os.chmod(bin_path, 0o755)
     return bin_path
-
