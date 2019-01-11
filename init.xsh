@@ -3,6 +3,7 @@ def initialize_xonsh():
 
     import os
     import sys
+    from functools import partial
 
     XONSH_BASE_DIR = os.path.expanduser("~/.xonsh")
     sys.path.append(os.path.join(XONSH_BASE_DIR, "lib"))
@@ -82,25 +83,38 @@ def initialize_xonsh():
     def local_command(name, base=os.path.join(XONSH_BASE_DIR, "cmd"), exec=sys.executable):
         return [exec, os.path.join(base, name)]
 
+    def alias(name_or_fn, name=None):
+        if isinstance(name_or_fn, str):
+            return partial(alias, name=name_or_fn)
+
+        fn = name_or_fn
+        name = fn.__name__ if name is None else name
+
+        aliases[name] = fn
+        return fn
+
+
+    @alias
     def reset(args=()):
         xonsh-reset
         initialize_variables()
 
+    @alias("pull-xonshrc")
     def pull_xonshrc(args=()):
         with utils.workdir(XONSH_BASE_DIR):
             git pull
 
-    def dbxcli_dl(args=()):
-        for f in args:
-            @(dbxcli) put @(f) /post/@(f)
+    if 'SSH_CONNECTION' in ${...}:
+        @alias
+        def dl(args=()):
+            for f in args:
+                @(dbxcli) put @(f) /post/@(f)
 
     vi = utils.which("nvim") or utils.which('vim')
     if vi is not None:
         aliases["vi"] = vi
         aliases["vim"] = vi
 
-    aliases['reset'] = reset
-    aliases['pull-xonshrc'] = pull_xonshrc
     aliases['touchnb'] = local_command("touchnb.py")
     aliases['color'] = local_command("color.py")
     aliases['plain'] = local_command("plain.py")
@@ -120,18 +134,16 @@ def initialize_xonsh():
         aliases['xconda'] = xconda
         in_conda = True
 
+    @alias("update-xonsh")
     def update_xonsh(args=()):
         pull-xonshrc
         xconda update --all
         xpython -m pip_review --interactive
 
-    aliases["update-xonsh"] = update_xonsh
-
     aliases['la'] = 'ls -a'
     aliases['ll'] = 'ls -l'
     aliases['llh'] = 'ls -lh'
     aliases["pbcopy"] = it2copy
-    aliases["dl"] = dbxcli_dl
 
 
 initialize_xonsh()
