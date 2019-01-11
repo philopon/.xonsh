@@ -88,7 +88,7 @@ def initialize_xonsh():
         with utils.workdir(XONSH_BASE_DIR):
             git pull
 
-    def dbxcli_put(args=()):
+    def dbxcli_dl(args=()):
         for f in args:
             @(dbxcli) put @(f) /post/@(f)
 
@@ -129,7 +129,7 @@ def initialize_xonsh():
     aliases['ll'] = 'ls -l'
     aliases['llh'] = 'ls -lh'
     aliases["pbcopy"] = it2copy
-    aliases["put"] = dbxcli_put
+    aliases["dl"] = dbxcli_dl
 
 
 initialize_xonsh()
