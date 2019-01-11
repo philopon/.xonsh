@@ -16,6 +16,7 @@ def initialize_xonsh():
     install.pip("matplotlib")
     install.pip("iterm2_tools")
     install.pip("tqdm")
+    install.pip("pip_review")
     install.pip("pillow", "PIL")
 
     install.ghq(XONSH_BASE_DIR)
@@ -76,11 +77,11 @@ def initialize_xonsh():
     def local_command(name, base=os.path.join(XONSH_BASE_DIR, "cmd"), exec=sys.executable):
         return [exec, os.path.join(base, name)]
 
-    def reset(args):
+    def reset(args=()):
         xonsh-reset
         initialize_variables()
 
-    def pull_xonshrc(args):
+    def pull_xonshrc(args=()):
         with utils.workdir(XONSH_BASE_DIR):
             git pull
 
@@ -104,9 +105,18 @@ def initialize_xonsh():
     __xonsh__.completers['conda'] = conda_wrapper.completer
     __xonsh__.completers.move_to_end('conda', False)
 
+    in_conda = False
     xconda = os.path.join(os.path.dirname(sys.executable), 'conda')
     if os.path.isfile(xconda):
         aliases['xconda'] = xconda
+        in_conda = True
+
+    def update_xonsh(args=()):
+        pull-xonshrc
+        xconda update --all
+        xpython -m pip_review --interactive
+
+    aliases["update-xonsh"] = update_xonsh
 
     aliases['la'] = 'ls -a'
     aliases['ll'] = 'ls -l'
