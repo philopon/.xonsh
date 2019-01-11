@@ -29,6 +29,8 @@ def initialize_xonsh():
     trans = install.trans(XONSH_BASE_DIR)
     it2copy = install.it2copy(XONSH_BASE_DIR)
 
+    xontrib load mpl
+
     from my_xonsh_config import conda_wrapper
 
     $XONSH_HISTORY_BACKEND = 'sqlite'
@@ -66,7 +68,7 @@ def initialize_xonsh():
     @events.on_import_post_exec_module
     def set_matplotlib_backend(module=None, **kwargs):
         if module.__name__ == 'matplotlib':
-            return module.use('svg')
+            module.use('svg')
 
     def initialize_variables():
         globals().update([
