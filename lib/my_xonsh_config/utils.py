@@ -2,8 +2,34 @@ import os
 import warnings
 from contextlib import contextmanager
 import shutil
+from functools import partial
+from time import perf_counter
 
 from xonsh.lazyasd import lazyobject
+
+
+if __xonsh__.env.get("XONSH_INIT_BENCH"):
+    @contextmanager
+    def bench(name):
+        start = perf_counter()
+        yield
+        end = perf_counter()
+        print(f"{name}: {end - start}")
+else:
+    @contextmanager
+    def bench(_name):
+        yield
+
+
+def alias(name_or_fn, name=None):
+    if isinstance(name_or_fn, str):
+        return partial(alias, name=name_or_fn)
+
+    fn = name_or_fn
+    name = fn.__name__ if name is None else name
+
+    aliases[name] = fn
+    return fn
 
 
 def which(cmd, path=None):
@@ -21,14 +47,14 @@ def add_PATH(*paths):
             warnings.warn(f"{path} is not fould. skip adding to PATH")
 
 
-def lazymodule(name, base=None):
+def lazymodule(base_or_name, name=None):
     @lazyobject
     def module():
         import importlib
-        if base is not None:
-            return getattr(importlib.import_module(base), name)
+        if name is not None:
+            return getattr(importlib.import_module(base_or_name), name)
         else:
-            return importlib.import_module(name)
+            return importlib.import_module(base_or_name)
 
     return module
 

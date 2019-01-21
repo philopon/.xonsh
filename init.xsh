@@ -1,149 +1,149 @@
 def initialize_xonsh():
     $XONSH_SHOW_TRACEBACK = True
+    $XONSH_INIT_BENCH = False
 
     import os
     import sys
-    from functools import partial
 
     XONSH_BASE_DIR = os.path.expanduser("~/.xonsh")
     sys.path.append(os.path.join(XONSH_BASE_DIR, "lib"))
 
-    from my_xonsh_config import install
-
-    install.pip("prompt_toolkit")
-    install.pip("pygments")
-    install.pip("requests")
-    install.pip("numpy")
-    install.pip("matplotlib")
-    install.pip("iterm2_tools")
-    install.pip("tqdm")
-    install.pip("pip_review")
-    install.pip("watchdog")
-    install.pip("click")
-    install.pip("pillow", "PIL")
-
-    install.ghq(XONSH_BASE_DIR)
-    install.jq(XONSH_BASE_DIR)
-    install.peco(XONSH_BASE_DIR)
-    install.ripgrep(XONSH_BASE_DIR)
-    dbxcli = install.dbxcli(XONSH_BASE_DIR)
-    trans = install.trans(XONSH_BASE_DIR)
-    it2copy = install.it2copy(XONSH_BASE_DIR)
-
-    xontrib load mpl
-
-    from my_xonsh_config import conda_wrapper
-
-    $XONSH_HISTORY_BACKEND = 'sqlite'
-    $AUTO_CD = True
-    $AUTO_PUSHD = True
-    $COMPLETIONS_MENU_ROWS = 20
-    $DIRSTACK_SIZE = 50
-    $XONSH_HISTORY_SIZE = (20 * 1024, 'commands')
-    $CASE_SENSITIVE_COMPLETIONS = True
-    $SUBSEQUENCE_PATH_COMPLETION = False
-
-    $HOMEBREW_NO_ANALYTICS = 1
-    $HOMEBREW_NO_AUTO_UPDATE = 1
-    $COLOR_RESULTS = False
-
     from my_xonsh_config import utils
 
-    utils.add_PATH(
-        os.path.join(XONSH_BASE_DIR, "bin"),
-        "~/miniconda3/bin",
-        "~/.config/yarn/global/node_modules/.bin",
-        "~/.cargo/bin",
-        "/usr/local/bin",
-    )
+    with utils.bench("pip install"):
+        from my_xonsh_config import install
 
-    from my_xonsh_config.prompt import set_prompt
-    set_prompt()
+        install.pip("prompt_toolkit")
+        install.pip("pygments")
+        install.pip("requests")
+        install.pip("numpy")
+        install.pip("matplotlib")
+        install.pip("iterm2_tools")
+        install.pip("tqdm")
+        install.pip("pip_review")
+        install.pip("watchdog")
+        install.pip("click")
+        install.pip("pillow", "PIL")
 
-    from my_xonsh_config.keybindings import custom_keybindings
-    events.on_ptk_create(custom_keybindings)
+    with utils.bench("bin install"):
+        install.ghq(XONSH_BASE_DIR)
+        install.jq(XONSH_BASE_DIR)
+        install.peco(XONSH_BASE_DIR)
+        install.ripgrep(XONSH_BASE_DIR)
+        dbxcli = install.dbxcli(XONSH_BASE_DIR)
+        trans = install.trans(XONSH_BASE_DIR)
+        it2copy = install.it2copy(XONSH_BASE_DIR)
 
-    from my_xonsh_config import repr_pretty
-    events.on_import_post_exec_module(repr_pretty.handler)
+    with utils.bench("global config"):
+        $XONSH_HISTORY_BACKEND = 'sqlite'
+        $AUTO_CD = True
+        $AUTO_PUSHD = True
+        $COMPLETIONS_MENU_ROWS = 20
+        $DIRSTACK_SIZE = 50
+        $XONSH_HISTORY_SIZE = (20 * 1024, 'commands')
+        $CASE_SENSITIVE_COMPLETIONS = True
+        $SUBSEQUENCE_PATH_COMPLETION = False
 
-    @events.on_import_post_exec_module
-    def set_matplotlib_backend(module=None, **kwargs):
-        if module.__name__ == 'matplotlib':
-            module.use('svg')
+        $HOMEBREW_NO_ANALYTICS = 1
+        $HOMEBREW_NO_AUTO_UPDATE = 1
+        $COLOR_RESULTS = False
 
-    def initialize_variables():
-        globals().update([
-            ("np", utils.lazymodule("numpy")),
-            ("tqdm", utils.lazymodule("tqdm", "tqdm")),
-            ("os", utils.lazymodule("os")),
-        ])
+    with utils.bench("add PATH"):
+        utils.add_PATH(
+            os.path.join(XONSH_BASE_DIR, "bin"),
+            "~/miniconda3/bin",
+            "~/.config/yarn/global/node_modules/.bin",
+            "~/.cargo/bin",
+            "/usr/local/bin",
+        )
 
-    initialize_variables()
+    with utils.bench("set PROMPT"):
+        from my_xonsh_config.prompt import set_prompt
+        set_prompt()
 
-    def local_command(name, base=os.path.join(XONSH_BASE_DIR, "cmd"), exec=sys.executable):
-        return [exec, os.path.join(base, name)]
+    with utils.bench("key binding"):
+        from my_xonsh_config.keybindings import custom_keybindings
+        events.on_ptk_create(custom_keybindings)
 
-    def alias(name_or_fn, name=None):
-        if isinstance(name_or_fn, str):
-            return partial(alias, name=name_or_fn)
+    with utils.bench("repr_pretty"):
+        from my_xonsh_config import repr_pretty
+        events.on_import_post_exec_module(repr_pretty.handler)
 
-        fn = name_or_fn
-        name = fn.__name__ if name is None else name
+    with utils.bench("matplotlib"):
+        @events.on_import_post_exec_module
+        def set_matplotlib_backend(module=None, **kwargs):
+            if module.__name__ == 'matplotlib':
+                module.use('svg')
 
-        aliases[name] = fn
-        return fn
+        xontrib load mpl
 
+    with utils.bench("initialize variables"):
+        def initialize_variables():
+            globals().update([
+                ("np", utils.lazymodule("numpy")),
+                ("tqdm", utils.lazymodule("tqdm", "tqdm")),
+                ("os", utils.lazymodule("os")),
+            ])
 
-    @alias
-    def reset(args=()):
-        xonsh-reset
         initialize_variables()
 
-    @alias("pull-xonshrc")
-    def pull_xonshrc(args=()):
-        with utils.workdir(XONSH_BASE_DIR):
-            git pull
+    with utils.bench("conda"):
+        from my_xonsh_config import conda_wrapper
+        aliases['conda'] = conda_wrapper.conda
+        aliases['conda-activate'] = conda_wrapper.conda_activate
+        __xonsh__.completers['conda'] = conda_wrapper.completer
+        __xonsh__.completers.move_to_end('conda', False)
 
-    if 'SSH_CONNECTION' in ${...}:
-        @alias
-        def dl(args=()):
-            for f in args:
-                @(dbxcli) put @(f) /post/@(f)
+        in_conda = False
+        xconda = os.path.join(os.path.dirname(sys.executable), 'conda')
+        if os.path.isfile(xconda):
+            aliases['xconda'] = xconda
+            in_conda = True
 
-    vi = utils.which("nvim") or utils.which('vim')
-    if vi is not None:
-        aliases["vi"] = vi
-        aliases["vim"] = vi
+    with utils.bench("aliases"):
+        def local_command(name, base=os.path.join(XONSH_BASE_DIR, "cmd"), exec=sys.executable):
+            return [exec, os.path.join(base, name)]
 
-    aliases['touchnb'] = local_command("touchnb.py")
-    aliases['color'] = local_command("color.py")
-    aliases['plain'] = local_command("plain.py")
-    aliases['xpython'] = sys.executable
-    aliases['xonsh'] = [sys.executable, '-m', 'xonsh']
-    aliases['trans'] = [trans, '-show-translation-phonetics=n', '-show-prompt-message=n', '-show-languages=n', '-show-alternatives=n']
+        @utils.alias
+        def reset(args=()):
+            xonsh-reset
+            initialize_variables()
 
-    aliases['source-bash'] = ["source-foreign", "bash", "--sourcer=source", "--extra-args=--norc"]
-    aliases['conda'] = conda_wrapper.conda
-    aliases['conda-activate'] = conda_wrapper.conda_activate
-    __xonsh__.completers['conda'] = conda_wrapper.completer
-    __xonsh__.completers.move_to_end('conda', False)
+        @utils.alias("pull-xonshrc")
+        def pull_xonshrc(args=()):
+            with utils.workdir(XONSH_BASE_DIR):
+                git pull
 
-    in_conda = False
-    xconda = os.path.join(os.path.dirname(sys.executable), 'conda')
-    if os.path.isfile(xconda):
-        aliases['xconda'] = xconda
-        in_conda = True
+        if 'SSH_CONNECTION' in ${...}:
+            @utils.alias
+            def dl(args=()):
+                for f in args:
+                    @(dbxcli) put @(f) / post/@(f)
+        vi = utils.which("nvim") or utils.which('vim')
+        if vi is not None:
+            aliases["vi"] = vi
+            aliases["vim"] = vi
 
-    @alias("update-xonsh")
-    def update_xonsh(args=()):
-        pull-xonshrc
-        xconda update --all
-        xpython -m pip_review --interactive
+        aliases['touchnb'] = local_command("touchnb.py")
+        aliases['color'] = local_command("color.py")
+        aliases['plain'] = local_command("plain.py")
+        aliases['xpython'] = sys.executable
+        aliases['xonsh'] = [sys.executable, '-m', 'xonsh']
+        aliases['trans'] = [trans, '-show-translation-phonetics=n',
+                            '-show-prompt-message=n', '-show-languages=n', '-show-alternatives=n']
 
-    aliases['la'] = 'ls -a'
-    aliases['ll'] = 'ls -l'
-    aliases['llh'] = 'ls -lh'
-    aliases["pbcopy"] = it2copy
+        aliases['source-bash'] = ["source-foreign", "bash", "--sourcer=source", "--extra-args=--norc"]
+
+        @utils.alias("update-xonsh")
+        def update_xonsh(args=()):
+            pull-xonshrc
+            xconda update - -all
+            xpython - m pip_review - -interactive
+
+        aliases['la'] = 'ls -a'
+        aliases['ll'] = 'ls -l'
+        aliases['llh'] = 'ls -lh'
+        aliases["pbcopy"] = it2copy
 
 
 initialize_xonsh()

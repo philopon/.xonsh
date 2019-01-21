@@ -1,11 +1,27 @@
 import os
 from logging import getLogger, StreamHandler, INFO
+from functools import wraps
 
 from xonsh.built_ins import run_subproc
 
 logger = getLogger(__name__)
 logger.setLevel(INFO)
 logger.addHandler(StreamHandler())
+
+
+def check_bin(bin_name):
+    def wrap(f):
+        @wraps(f)
+        def wrapped(base):
+            bin_path = os.path.join(base, "bin", bin_name)
+            if os.path.isfile(bin_path):
+                return bin_path
+
+            return f(bin_path)
+
+        return wrapped
+
+    return wrap
 
 
 def pip(pkg, pyname=None):
@@ -16,16 +32,13 @@ def pip(pkg, pyname=None):
 
 def github_releases(bin_name, repo, **spec):
     def wrap(install):
-        def installer(base):
+        @check_bin(bin_name)
+        def installer(bin_path):
             import platform
             import requests
             from tqdm import tqdm
             from io import BytesIO
             import re
-
-            bin_path = os.path.join(base, "bin", bin_name)
-            if os.path.isfile(bin_path):
-                return bin_path
 
             sys_arch = f"{platform.system().lower()}_{platform.machine()}"
 
@@ -83,9 +96,9 @@ def fzf(content, bin_path):
 
 
 @github_releases("jq", "stedolan/jq",
-    darwin_x86_64=r"jq-osx-amd64",
-    linux_x86_64=r"jq-linux64",
-)
+                 darwin_x86_64=r"jq-osx-amd64",
+                 linux_x86_64=r"jq-linux64",
+                 )
 def jq(content, bin_path):
     import shutil
     with open(bin_path, "wb") as dst:
@@ -94,9 +107,9 @@ def jq(content, bin_path):
 
 
 @github_releases("dbxcli", "dropbox/dbxcli",
-    darwin_x86_64=r"dbxcli-darwin-amd64",
-    linux_x86_64=r"dbxcli-linux-amd64",
-)
+                 darwin_x86_64=r"dbxcli-darwin-amd64",
+                 linux_x86_64=r"dbxcli-linux-amd64",
+                 )
 def dbxcli(content, bin_path):
     import shutil
     with open(bin_path, "wb") as dst:
@@ -105,9 +118,9 @@ def dbxcli(content, bin_path):
 
 
 @github_releases("peco", "peco/peco",
-    darwin_x86_64=r"peco_darwin_amd64\.zip",
-    linux_x86_64=r"peco_linux_amd64\.tar\.gz",
-)
+                 darwin_x86_64=r"peco_darwin_amd64\.zip",
+                 linux_x86_64=r"peco_linux_amd64\.tar\.gz",
+                 )
 def peco(content, bin_path):
     import shutil
     if content.name.endswith(".zip"):
@@ -122,7 +135,8 @@ def peco(content, bin_path):
         import tarfile
         with tarfile.open(mode="r:gz", fileobj=content) as t:
             shutil.copyfileobj(
-                t.extractfile([name for name in t.getnames() if os.path.basename(name) == os.path.basename(bin_path)][0]),
+                t.extractfile([name for name in t.getnames() if os.path.basename(
+                    name) == os.path.basename(bin_path)][0]),
                 open(bin_path, "wb")
             )
 
@@ -130,27 +144,24 @@ def peco(content, bin_path):
 
 
 @github_releases("rg", "BurntSushi/ripgrep",
-    darwin_x86_64=r"ripgrep-[0-9.]+-x86_64-apple-darwin\.tar\.gz",
-    linux_x86_64=r"ripgrep-[0-9.]+-x86_64-unknown-linux-musl\.tar\.gz",
-)
+                 darwin_x86_64=r"ripgrep-[0-9.]+-x86_64-apple-darwin\.tar\.gz",
+                 linux_x86_64=r"ripgrep-[0-9.]+-x86_64-unknown-linux-musl\.tar\.gz",
+                 )
 def ripgrep(content, bin_path):
     import shutil
     import tarfile
     with tarfile.open(mode="r:gz", fileobj=content) as t:
-            shutil.copyfileobj(
-                t.extractfile([name for name in t.getnames() if os.path.basename(name) == os.path.basename(bin_path)][0]),
-                open(bin_path, "wb")
-            )
+        shutil.copyfileobj(
+            t.extractfile([name for name in t.getnames() if os.path.basename(name) == os.path.basename(bin_path)][0]),
+            open(bin_path, "wb")
+        )
 
     os.chmod(bin_path, 0o755)
 
 
-def it2copy(base):
+@check_bin("it2copy")
+def it2copy(bin_path):
     import requests
-
-    bin_path = os.path.join(base, "bin", "it2copy")
-    if os.path.isfile(bin_path):
-        return bin_path
 
     with requests.get(f"https://iterm2.com/utilities/it2copy", stream=True) as resp, open(bin_path, "wb") as o:
         for chunk in resp.iter_content(chunk_size=10240):
@@ -160,11 +171,9 @@ def it2copy(base):
     return bin_path
 
 
-def trans(base):
+@check_bin("trans")
+def trans(bin_path):
     import requests
-    bin_path = os.path.join(base, "bin", "trans")
-    if os.path.isfile(bin_path):
-        return bin_path
 
     with requests.get(f"https://git.io/trans", stream=True) as resp, open(bin_path, "wb") as o:
         for chunk in resp.iter_content(chunk_size=10240):

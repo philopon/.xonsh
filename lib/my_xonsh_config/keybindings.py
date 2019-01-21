@@ -1,9 +1,8 @@
 import os
 import re
 
-from prompt_toolkit.keys import Keys
+from my_xonsh_config.utils import lazymodule
 from prompt_toolkit import filters
-from prompt_toolkit.application.current import get_app
 
 from xonsh import dirstack
 from xonsh.aliases import xonsh_exit
@@ -14,6 +13,8 @@ from .utils import common_prefix
 
 
 def custom_keybindings(bindings, **kwargs):
+    get_app = lazymodule("prompt_toolkit.application.current", "get_app")
+
     @filters.Condition
     def in_conda_env():
         return "CONDA_DEFAULT_ENV" in __xonsh__.env
@@ -22,24 +23,24 @@ def custom_keybindings(bindings, **kwargs):
     def no_input():
         return get_app().current_buffer.text == ""
 
-    bindings.add(Keys.ControlG, filter=no_input)(selector.ghq)
-    bindings.add(Keys.ControlR, filter=no_input)(selector.history)
-    bindings.add(Keys.ControlS, filter=no_input)(selector.ssh)
+    bindings.add("c-g", filter=no_input)(selector.ghq)
+    bindings.add("c-r", filter=no_input)(selector.history)
+    bindings.add("c-s", filter=no_input)(selector.ssh)
 
-    @bindings.add(Keys.ControlB, filter=no_input)
+    @bindings.add("c-h", filter=no_input)
     def popd(event):
         dirstack.popd([])
         event.cli.print_text(f"\n{dirstack.dirs([])[0]}\n")
         event.current_buffer.validate_and_handle()
 
-    @bindings.add(Keys.ControlU, filter=no_input)
+    @bindings.add("c-u", filter=no_input)
     def go_up(event):
         dirstack.cd([os.path.dirname(__xonsh__.env['PWD'])])
         event.current_buffer.validate_and_handle()
 
     re_partial_complete = re.compile(r'(.+?)([ /:]|$)+')
 
-    @bindings.add(Keys.ControlF)
+    @bindings.add("c-f")
     def partial_complete(event):
         buf = event.current_buffer
         if buf.suggestion is None:
@@ -61,7 +62,7 @@ def custom_keybindings(bindings, **kwargs):
         else:
             buf.insert_text('/')
 
-    @bindings.add(Keys.Tab)
+    @bindings.add("c-i")
     def complete_common_on_tab(event):
         buf = event.current_buffer
         buf.start_completion()
@@ -79,16 +80,16 @@ def custom_keybindings(bindings, **kwargs):
             buf.delete_before_cursor(comp_len)
             buf.insert_text(common)
 
-    @bindings.add(Keys.ControlD, filter=no_input & ~in_conda_env)
+    @bindings.add("c-d", filter=no_input & ~in_conda_env)
     def ignore_eof(event):
         event.app.output.bell()
 
-    @bindings.add(Keys.ControlD, Keys.ControlD, filter=no_input & ~in_conda_env)
+    @bindings.add("c-d", "c-d", filter=no_input & ~in_conda_env)
     def two_control_d_to_exit(event):
         event.cli.current_buffer.validate_and_handle()
         xonsh_exit([])
 
-    @bindings.add(Keys.ControlD, filter=no_input & in_conda_env)
+    @bindings.add("c-d", filter=no_input & in_conda_env)
     def conda_deactivate(event):
         conda_wrapper.deactivate()
         event.current_buffer.validate_and_handle()
