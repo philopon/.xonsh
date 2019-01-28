@@ -30,6 +30,8 @@ def initialize_xonsh():
         install.jq(XONSH_BASE_DIR)
         install.peco(XONSH_BASE_DIR)
         install.ripgrep(XONSH_BASE_DIR)
+        install.exa(XONSH_BASE_DIR)
+        install.fd(XONSH_BASE_DIR)
         dbxcli = install.dbxcli(XONSH_BASE_DIR)
         trans = install.trans(XONSH_BASE_DIR)
         it2copy = install.it2copy(XONSH_BASE_DIR)
@@ -140,9 +142,10 @@ def initialize_xonsh():
             xconda update - -all
             xpython - m pip_review - -interactive
 
-        aliases['la'] = 'ls -a'
-        aliases['ll'] = 'ls -l'
-        aliases['llh'] = 'ls -lh'
+        aliases['l'] = 'exa'
+        aliases['la'] = 'exa -a'
+        aliases['ll'] = 'exa -l'
+        aliases['llh'] = 'exa -lh'
         aliases["pbcopy"] = it2copy
 
 

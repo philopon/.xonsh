@@ -117,6 +117,19 @@ def dbxcli(content, bin_path):
     os.chmod(bin_path, 0o755)
 
 
+@github_releases("exa", "ogham/exa",
+                 darwin_x86_64=r"exa-macos-x86_64-[0-9.]+\.zip",
+                 linux_x86_64=r"exa-linux-x86_64-[0-9.]+\.zip",
+                 )
+def exa(content, bin_path):
+    import shutil
+    import zipfile
+    with zipfile.ZipFile(content) as z:
+        shutil.copyfileobj(z.open(z.namelist()[0]), open(bin_path, "wb"))
+
+    os.chmod(bin_path, 0o755)
+
+
 @github_releases("peco", "peco/peco",
                  darwin_x86_64=r"peco_darwin_amd64\.zip",
                  linux_x86_64=r"peco_linux_amd64\.tar\.gz",
@@ -148,6 +161,22 @@ def peco(content, bin_path):
                  linux_x86_64=r"ripgrep-[0-9.]+-x86_64-unknown-linux-musl\.tar\.gz",
                  )
 def ripgrep(content, bin_path):
+    import shutil
+    import tarfile
+    with tarfile.open(mode="r:gz", fileobj=content) as t:
+        shutil.copyfileobj(
+            t.extractfile([name for name in t.getnames() if os.path.basename(name) == os.path.basename(bin_path)][0]),
+            open(bin_path, "wb")
+        )
+
+    os.chmod(bin_path, 0o755)
+
+
+@github_releases("fd", "sharkdp/fd",
+                 darwin_x86_64=r"fd-v[0-9.]+-x86_64-apple-darwin\.tar\.gz",
+                 linux_x86_64=r"fd-v[0-9.]+-x86_64-unknown-linux-musl\.tar\.gz",
+                 )
+def fd(content, bin_path):
     import shutil
     import tarfile
     with tarfile.open(mode="r:gz", fileobj=content) as t:
