@@ -124,6 +124,13 @@ def dbxcli(content, bin_path):
 def exa(content, bin_path):
     import shutil
     import zipfile
+    import platform
+    import subprocess
+
+    if platform.system() == "Linux" and float(subprocess.run(['ldd', '--version'], stdout=subprocess.PIPE).stdout.split(b'\n')[0].split()[-1]) < 2.14:
+        with open(bin_path, "wb"):
+            return
+
     with zipfile.ZipFile(content) as z:
         shutil.copyfileobj(z.open(z.namelist()[0]), open(bin_path, "wb"))
 

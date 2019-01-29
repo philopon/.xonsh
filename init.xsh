@@ -142,10 +142,12 @@ def initialize_xonsh():
             xconda update - -all
             xpython - m pip_review - -interactive
 
-        aliases['l'] = 'exa'
-        aliases['la'] = 'exa -a'
-        aliases['ll'] = 'exa -l'
-        aliases['llh'] = 'exa -lh'
+        if utils.which("exa"):
+            aliases["ls"] = "exa"
+
+        aliases['la'] = 'ls -a'
+        aliases['ll'] = 'ls -l'
+        aliases['llh'] = 'ls -lh'
         aliases["pbcopy"] = it2copy
 
 
