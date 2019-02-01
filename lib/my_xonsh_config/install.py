@@ -127,7 +127,7 @@ def exa(content, bin_path):
     import platform
     import subprocess
 
-    if platform.system() == "Linux" and float(subprocess.run(['ldd', '--version'], stdout=subprocess.PIPE).stdout.split(b'\n')[0].split()[-1]) < 2.14:
+    if platform.system() == "Linux" and float(subprocess.run(['ldd', '--version'], stdout=subprocess.PIPE).stdout.split(b'\n')[0].split()[-1]) < 2.18:
         with open(bin_path, "wb"):
             return
 

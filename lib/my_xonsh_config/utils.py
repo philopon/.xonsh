@@ -4,6 +4,7 @@ from contextlib import contextmanager
 import shutil
 from functools import partial
 from time import perf_counter
+import resource
 
 from xonsh.lazyasd import lazyobject
 
@@ -111,3 +112,9 @@ def workdir(wd):
         yield
     finally:
         os.chdir(cwd)
+
+
+def relax_limit(rsc, threshold):
+    soft, hard = resource.getrlimit(rsc)
+    if soft < threshold:
+        resource.setrlimit(rsc, (hard, hard))

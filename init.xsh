@@ -10,6 +10,11 @@ def initialize_xonsh():
 
     from my_xonsh_config import utils
 
+    with utils.bench("relax limits"):
+        import resource
+        utils.relax_limit(resource.RLIMIT_NPROC, 128)
+            
+
     with utils.bench("pip install"):
         from my_xonsh_config import install
 
