@@ -27,12 +27,6 @@ def custom_keybindings(bindings, **kwargs):
     bindings.add("c-r", filter=no_input)(selector.history)
     bindings.add("c-s", filter=no_input)(selector.ssh)
 
-    @bindings.add("c-h", filter=no_input)
-    def popd(event):
-        dirstack.popd([])
-        event.cli.print_text(f"\n{dirstack.dirs([])[0]}\n")
-        event.current_buffer.validate_and_handle()
-
     @bindings.add("c-u", filter=no_input)
     def go_up(event):
         dirstack.cd([os.path.dirname(__xonsh__.env['PWD'])])
