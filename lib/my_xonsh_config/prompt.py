@@ -59,7 +59,8 @@ def set_prompt():
             return None
 
     def ssh_color():
-        return '{BOLD_#ff5f5f}' if 'SSH_CONNECTION' in __xonsh__.env else ''
+        cond = 'SSH_CONNECTION' in __xonsh__.env or 'PJM_O_HOST' in __xonsh__.env
+        return '{BOLD_#ff5f5f}' if cond else ''
 
     def prompt_end_color():
         if len(__xonsh__.history) > 0 and __xonsh__.history[-1].rtn != 0:
