@@ -40,17 +40,20 @@ def github_releases(bin_name, repo, **spec):
             from io import BytesIO
             import re
 
-            sys_arch = f"{platform.system().lower()}_{platform.machine()}"
+            sys_arch = "{}_{}".format(platform.system().lower(), platform.machine())
 
-            pattern = spec[sys_arch]
+            pattern = spec.get(sys_arch)
+            if pattern is None:
+                return
+
             logger.info("installing {} ...".format(repo))
 
-            with requests.get(f"https://api.github.com/repos/{repo}/releases") as r:
+            with requests.get("https://api.github.com/repos/{}/releases".format(repo)) as r:
                 for asset in (asset for rel in r.json() for asset in rel["assets"]):
                     if re.match(pattern, asset["name"]):
                         break
                 else:
-                    raise ValueError(f"no asset: {pattern}")
+                    raise ValueError("no asset: {}".format(pattern))
 
             with requests.get(asset["browser_download_url"], stream=True) as resp, tqdm(total=int(resp.headers["Content-Length"]), unit="B", unit_scale=True) as prog:
 
@@ -199,7 +202,7 @@ def fd(content, bin_path):
 def it2copy(bin_path):
     import requests
 
-    with requests.get(f"https://iterm2.com/utilities/it2copy", stream=True) as resp, open(bin_path, "wb") as o:
+    with requests.get("https://iterm2.com/utilities/it2copy", stream=True) as resp, open(bin_path, "wb") as o:
         for chunk in resp.iter_content(chunk_size=10240):
             o.write(chunk)
 
@@ -211,7 +214,7 @@ def it2copy(bin_path):
 def trans(bin_path):
     import requests
 
-    with requests.get(f"https://git.io/trans", stream=True) as resp, open(bin_path, "wb") as o:
+    with requests.get("https://git.io/trans", stream=True) as resp, open(bin_path, "wb") as o:
         for chunk in resp.iter_content(chunk_size=10240):
             o.write(chunk)
 

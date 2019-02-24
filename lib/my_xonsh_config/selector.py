@@ -42,7 +42,7 @@ def history(event):
     event.current_buffer.insert_text(choice)
 
 
-def ssh(event, known_hosts=f'{__xonsh__.env["HOME"]}/.ssh/known_hosts'):
+def ssh(event, known_hosts='{}/.ssh/known_hosts'.format(__xonsh__.env["HOME"])):
     hosts = [
         h.split(',')[0].encode()
         for h in (h.split(' ')[0] for h in open(known_hosts))
@@ -53,5 +53,5 @@ def ssh(event, known_hosts=f'{__xonsh__.env["HOME"]}/.ssh/known_hosts'):
     if len(r) == 0:
         return
 
-    event.current_buffer.insert_text(f"ssh {r.decode()}")
+    event.current_buffer.insert_text("ssh {}".format(r.decode()))
     event.current_buffer.validate_and_handle()

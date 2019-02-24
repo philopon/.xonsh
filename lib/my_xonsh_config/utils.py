@@ -15,7 +15,7 @@ if __xonsh__.env.get("XONSH_INIT_BENCH"):
         start = perf_counter()
         yield
         end = perf_counter()
-        print(f"{name}: {end - start}")
+        print("{}: {}".format(name, end - start))
 else:
     @contextmanager
     def bench(_name):
@@ -45,7 +45,7 @@ def add_PATH(*paths):
         if os.path.isdir(path):
             __xonsh__.env["PATH"].add(path, front=True)
         else:
-            warnings.warn(f"{path} is not fould. skip adding to PATH")
+            warnings.warn("{} is not fould. skip adding to PATH".format(path))
 
 
 def lazymodule(base_or_name, name=None):
