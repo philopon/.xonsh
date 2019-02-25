@@ -86,18 +86,6 @@ def ghq(content, bin_path):
     os.chmod(path, 0o755)
 
 
-@github_releases(
-    "fzf", "junegunn/fzf-bin",
-    darwin_x86_64=r"fzf-.+-darwin_amd64\.tgz",
-    linux_x86_64=r"fzf-.+-linux_amd64\.tgz",
-)
-def fzf(content, bin_path):
-    import tarfile
-    with tarfile.open(mode="r:gz", fileobj=content) as t:
-        t.extract(os.path.basename(bin_path), path=os.path.dirname(bin_path))
-    os.chmod(bin_path, 0o755)
-
-
 @github_releases("jq", "stedolan/jq",
                  darwin_x86_64=r"jq-osx-amd64",
                  linux_x86_64=r"jq-linux64",
@@ -112,6 +100,7 @@ def jq(content, bin_path):
 @github_releases("dbxcli", "dropbox/dbxcli",
                  darwin_x86_64=r"dbxcli-darwin-amd64",
                  linux_x86_64=r"dbxcli-linux-amd64",
+                 linux_armv7l=r"dbxcli-linux-arm",
                  )
 def dbxcli(content, bin_path):
     import shutil
@@ -143,6 +132,7 @@ def exa(content, bin_path):
 @github_releases("peco", "peco/peco",
                  darwin_x86_64=r"peco_darwin_amd64\.zip",
                  linux_x86_64=r"peco_linux_amd64\.tar\.gz",
+                 linux_armv7l=r"peco_linux_arm\.tar\.gz",
                  )
 def peco(content, bin_path):
     import shutil
@@ -169,6 +159,7 @@ def peco(content, bin_path):
 @github_releases("rg", "BurntSushi/ripgrep",
                  darwin_x86_64=r"ripgrep-[0-9.]+-x86_64-apple-darwin\.tar\.gz",
                  linux_x86_64=r"ripgrep-[0-9.]+-x86_64-unknown-linux-musl\.tar\.gz",
+                 linux_armv7l=r"ripgrep-[0-9.]+-arm-unknown-linux-gnueabihf\.tar\.gz",
                  )
 def ripgrep(content, bin_path):
     import shutil
@@ -185,6 +176,7 @@ def ripgrep(content, bin_path):
 @github_releases("fd", "sharkdp/fd",
                  darwin_x86_64=r"fd-v[0-9.]+-x86_64-apple-darwin\.tar\.gz",
                  linux_x86_64=r"fd-v[0-9.]+-x86_64-unknown-linux-musl\.tar\.gz",
+                 linux_armv7l=r"fd-v[0-9.]+-arm-unknown-linux-gnueabihf\.tar\.gz",
                  )
 def fd(content, bin_path):
     import shutil
