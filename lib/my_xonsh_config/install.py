@@ -198,6 +198,22 @@ def fd(content, bin_path):
     os.chmod(bin_path, 0o755)
 
 
+@github_releases("gotop", "cjbassi/gotop",
+                 darwin_x86_64=r"gotop_[0-9.]+_darwin_amd64.tgz",
+                 linux_x86_64=r"gotop_[0-9.]+_linux_amd64.tgz",
+                 )
+def gotop(content, bin_path):
+    import shutil
+    import tarfile
+    with tarfile.open(mode="r:gz", fileobj=content) as t:
+        shutil.copyfileobj(
+            t.extractfile([name for name in t.getnames() if os.path.basename(name) == os.path.basename(bin_path)][0]),
+            open(bin_path, "wb")
+        )
+
+    os.chmod(bin_path, 0o755)
+
+
 @check_bin("it2copy")
 def it2copy(bin_path):
     import requests

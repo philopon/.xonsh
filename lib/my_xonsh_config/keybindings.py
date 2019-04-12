@@ -34,46 +34,6 @@ def custom_keybindings(bindings, **kwargs):
 
     re_partial_complete = re.compile(r'(.+?)([ /:]|$)+')
 
-    @bindings.add("c-f")
-    def partial_complete(event):
-        buf = event.current_buffer
-        if buf.suggestion is None:
-            return buf.cursor_right()
-
-        s = re_partial_complete.match(buf.suggestion.text)
-        if s is None:
-            return buf.cursor_right()
-
-        buf.insert_text(s.group(1) + s.group(2))
-
-    @bindings.add('/', filter=filters.has_completions)
-    def apply_on_slash(event):
-        buf = event.current_buffer
-        comp = buf.complete_state.current_completion
-
-        if comp is not None and len(comp.text) > 1 and comp.text[-1] == '/':
-            buf.apply_completion(comp)
-        else:
-            buf.insert_text('/')
-
-    @bindings.add("c-i")
-    def complete_common_on_tab(event):
-        buf = event.current_buffer
-        buf.start_completion()
-        state = buf.complete_state
-        if state is None:
-            return
-
-        comp = state.completions
-        if len(comp) == 0:
-            return
-
-        common = common_prefix(c.text for c in comp)
-        comp_len = -comp[0].start_position
-        if common and len(common) > comp_len:
-            buf.delete_before_cursor(comp_len)
-            buf.insert_text(common)
-
     @bindings.add("c-d", filter=no_input & ~in_conda_env)
     def ignore_eof(event):
         event.app.output.bell()

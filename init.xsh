@@ -4,16 +4,17 @@ def initialize_xonsh():
 
     import os
     import sys
+    import subprocess
 
     XONSH_BASE_DIR = os.path.expanduser("~/.xonsh")
     sys.path.append(os.path.join(XONSH_BASE_DIR, "lib"))
+    $RIPGREP_CONFIG_PATH = os.path.join(XONSH_BASE_DIR, "ripgreprc")
 
     from my_xonsh_config import utils
 
     with utils.bench("relax limits"):
         import resource
         utils.relax_limit(resource.RLIMIT_NPROC, 128)
-            
 
     with utils.bench("pip install"):
         from my_xonsh_config import install
@@ -26,7 +27,6 @@ def initialize_xonsh():
         install.pip("iterm2_tools")
         install.pip("tqdm")
         install.pip("pip_review")
-        install.pip("watchdog")
         install.pip("click")
         install.pip("pillow", "PIL")
 
@@ -37,6 +37,7 @@ def initialize_xonsh():
         install.ripgrep(XONSH_BASE_DIR)
         install.exa(XONSH_BASE_DIR)
         install.fd(XONSH_BASE_DIR)
+        install.gotop(XONSH_BASE_DIR)
         dbxcli = install.dbxcli(XONSH_BASE_DIR)
         trans = install.trans(XONSH_BASE_DIR)
         it2copy = install.it2copy(XONSH_BASE_DIR)
@@ -57,6 +58,7 @@ def initialize_xonsh():
 
     with utils.bench("add PATH"):
         utils.add_PATH(
+            os.path.join(XONSH_BASE_DIR, "cmd"),
             os.path.join(XONSH_BASE_DIR, "bin"),
             "~/miniconda3/bin",
             "~/.config/yarn/global/node_modules/.bin",
@@ -108,9 +110,6 @@ def initialize_xonsh():
             in_conda = True
 
     with utils.bench("aliases"):
-        def local_command(name, base=os.path.join(XONSH_BASE_DIR, "cmd"), exec=sys.executable):
-            return [exec, os.path.join(base, name)]
-
         @utils.alias
         def reset(args=()):
             xonsh-reset
@@ -131,9 +130,6 @@ def initialize_xonsh():
             aliases["vi"] = vi
             aliases["vim"] = vi
 
-        aliases['touchnb'] = local_command("touchnb.py")
-        aliases['color'] = local_command("color.py")
-        aliases['plain'] = local_command("plain.py")
         aliases['xpython'] = sys.executable
         aliases['xonsh'] = [sys.executable, '-m', 'xonsh']
         aliases['trans'] = [trans, '-show-translation-phonetics=n',
@@ -144,16 +140,27 @@ def initialize_xonsh():
         @utils.alias("update-xonsh")
         def update_xonsh(args=()):
             pull-xonshrc
-            xconda update - -all
+            xconda update --all
             xpython - m pip_review - -interactive
 
         if utils.which("exa"):
             aliases["ls"] = "exa"
 
+        if utils.which("otool"):
+            aliases["ldd"] = "otool -L"
+
         aliases['la'] = 'ls -a'
         aliases['ll'] = 'ls -l'
         aliases['llh'] = 'ls -lh'
         aliases["pbcopy"] = it2copy
+
+        aliases["c"] = "pbcopy"
+        aliases["p"] = "pbpaste"
+
+        @utils.alias("pn")
+        def pn(args=()):
+            p = subprocess.run("pbpaste", stdout=subprocess.PIPE)
+            print(" ".join(p.stdout.decode().split("\n")))
 
 
 initialize_xonsh()
