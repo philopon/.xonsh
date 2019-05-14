@@ -218,6 +218,19 @@ def it2copy(bin_path):
     return bin_path
 
 
+@check_bin("imgcat")
+def imgcat(bin_path):
+    import requests
+
+    with requests.get("https://iterm2.com/utilities/imgcat", stream=True) as resp, open(bin_path, "wb") as o:
+        for chunk in resp.iter_content(chunk_size=10240):
+            o.write(chunk)
+
+    os.chmod(bin_path, 0o755)
+    return bin_path
+
+
+
 @check_bin("trans")
 def trans(bin_path):
     import requests

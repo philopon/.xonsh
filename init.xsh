@@ -41,6 +41,7 @@ def initialize_xonsh():
         dbxcli = install.dbxcli(XONSH_BASE_DIR)
         trans = install.trans(XONSH_BASE_DIR)
         it2copy = install.it2copy(XONSH_BASE_DIR)
+        install.imgcat(XONSH_BASE_DIR)
 
     with utils.bench("global config"):
         $XONSH_HISTORY_BACKEND = 'sqlite'
@@ -64,6 +65,7 @@ def initialize_xonsh():
             "~/.config/yarn/global/node_modules/.bin",
             "~/.cargo/bin",
             "/usr/local/bin",
+            "/opt/ksched/bin/",
         )
 
     with utils.bench("set PROMPT"):
@@ -148,6 +150,9 @@ def initialize_xonsh():
 
         if utils.which("otool"):
             aliases["ldd"] = "otool -L"
+
+        if not utils.which("kstat"):
+            aliases["kstat"] = "ssh k.aics.riken.jp /opt/ksched/bin/kstat"
 
         aliases['la'] = 'ls -a'
         aliases['ll'] = 'ls -l'

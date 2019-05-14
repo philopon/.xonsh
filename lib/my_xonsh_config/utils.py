@@ -39,13 +39,14 @@ def which(cmd, path=None):
     return shutil.which(cmd, path=path)
 
 
-def add_PATH(*paths):
+def add_PATH(*paths, warning=False):
     for path in reversed(paths):
         path = os.path.expanduser(path)
         if os.path.isdir(path):
             __xonsh__.env["PATH"].add(path, front=True)
         else:
-            warnings.warn("{} is not fould. skip adding to PATH".format(path))
+            if warning:
+                warnings.warn("{} is not fould. skip adding to PATH".format(path))
 
 
 def lazymodule(base_or_name, name=None):
