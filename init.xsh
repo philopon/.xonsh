@@ -9,6 +9,7 @@ def initialize_xonsh():
     XONSH_BASE_DIR = os.path.expanduser("~/.xonsh")
     sys.path.append(os.path.join(XONSH_BASE_DIR, "lib"))
     $RIPGREP_CONFIG_PATH = os.path.join(XONSH_BASE_DIR, "ripgreprc")
+    $GO111MODULE = "on"
 
     from my_xonsh_config import utils
 
@@ -44,7 +45,6 @@ def initialize_xonsh():
 
     with utils.bench("global config"):
         $XONSH_HISTORY_BACKEND = 'sqlite'
-        $AUTO_CD = True
         $AUTO_PUSHD = True
         $COMPLETIONS_MENU_ROWS = 20
         $DIRSTACK_SIZE = 50
