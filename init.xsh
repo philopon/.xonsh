@@ -20,16 +20,15 @@ def initialize_xonsh():
     with utils.bench("pip install"):
         from my_xonsh_config import install
 
-        install.pip("prompt_toolkit")
-        install.pip("pygments")
-        install.pip("requests")
-        install.pip("numpy")
-        install.pip("matplotlib")
+        install.package("prompt_toolkit")
+        install.package("pygments")
+        install.package("requests")
+        install.package("numpy")
+        install.package("matplotlib")
+        install.package("tqdm")
+        install.package("click")
+        install.package("pillow", "PIL")
         install.pip("iterm2_tools")
-        install.pip("tqdm")
-        install.pip("pip_review")
-        install.pip("click")
-        install.pip("pillow", "PIL")
 
     with utils.bench("bin install"):
         install.ghq(XONSH_BASE_DIR)

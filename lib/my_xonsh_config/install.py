@@ -1,4 +1,5 @@
 import os
+import sys
 from logging import getLogger, StreamHandler, INFO
 from functools import wraps
 
@@ -24,10 +25,40 @@ def check_bin(bin_name):
     return wrap
 
 
+def get_conda():
+    b = sys.prefix
+    for cand in ["bin/conda", "../../bin/conda"]:
+        p = os.path.join(b, cand)
+        if os.path.isfile(p):
+            return p
+
+
+def get_conda_prefix():
+    p = sys.prefix
+    m = os.path.join(p, "conda-meta")
+    if os.path.isdir(m) and os.listdir(m):
+        return p
+
+
+def package(pkg, pyname=None):
+    import importlib
+    if importlib.util.find_spec(pyname or pkg):
+        return
+
+    conda = get_conda()
+    if conda is None:
+        return pip(pkg, pyname)
+
+    prefix = get_conda_prefix()
+    run_subproc([[conda, "install", "-yp", prefix, pkg]])
+
+
 def pip(pkg, pyname=None):
     import importlib
-    if not importlib.util.find_spec(pyname or pkg):
-        run_subproc([["xpip", "install", pkg]])
+    if importlib.util.find_spec(pyname or pkg):
+        return
+
+    run_subproc([["xpip", "install", pkg]])
 
 
 def github_releases(bin_name, repo, **spec):
