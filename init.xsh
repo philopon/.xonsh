@@ -150,7 +150,7 @@ def initialize_xonsh():
         if utils.which("otool"):
             aliases["ldd"] = "otool -L"
 
-        if not utils.which("kstat"):
+        if not utils.which("/opt/ksched/bin/kstat"):
             aliases["kstat"] = ['ssh', 'k.aics.riken.jp', '/opt/ksched/bin/kstat', '-A', '--filter', 'user=$(whoami)']
 
 	if utils.which("code-insiders"):
