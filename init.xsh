@@ -65,7 +65,6 @@ def initialize_xonsh():
             "~/.config/yarn/global/node_modules/.bin",
             "~/.cargo/bin",
             "/usr/local/bin",
-            "/opt/ksched/bin/",
         )
 
     with utils.bench("set PROMPT"):
@@ -169,6 +168,10 @@ def initialize_xonsh():
         def pn(args=()):
             p = subprocess.run("pbpaste", stdout=subprocess.PIPE)
             print(" ".join(p.stdout.decode().split("\n")))
+
+    local_config = os.path.join(XONSH_BASE_DIR, "local.xsh")
+    if os.path.isfile(local_config):
+        source @(local_config)
 
 
 initialize_xonsh()
