@@ -61,9 +61,11 @@ def initialize_xonsh():
         utils.add_PATH(
             os.path.join(XONSH_BASE_DIR, "cmd"),
             os.path.join(XONSH_BASE_DIR, "bin"),
+            "~/.poetry/bin",
             "~/miniconda3/bin",
             "~/.config/yarn/global/node_modules/.bin",
             "~/.cargo/bin",
+            "~/.local/bin",
             "/usr/local/bin",
         )
 
@@ -144,25 +146,32 @@ def initialize_xonsh():
             xconda update --all
             xpython - m pip_review - -interactive
 
-	@utils.alias
-	def ssh(args=()):
-	    if len(args) != 1:
-	        command ssh @(args)
-	        return
+        @utils.alias
+        def ssh(args=()):
+            if len(args) != 1:
+                command ssh @(args)
+                return
 
-            from paramiko import SSHConfig
-	    configs = SSHConfig()
-	    with open(os.path.expanduser("~/.ssh/config")) as f:
-	        configs.parse(f)
+                from paramiko import SSHConfig
+            configs = SSHConfig()
+            with open(os.path.expanduser("~/.ssh/config")) as f:
+                configs.parse(f)
 
-	    config = configs.lookup(args[0])
-	    xonsh = config.get("xonshpath")
-	    if xonsh is None:
-	        command ssh @(args)
-	        return
+            config = configs.lookup(args[0])
+            xonsh = config.get("xonshpath")
+            if xonsh is None:
+                command ssh @(args)
+                return
 
-	    command ssh -t @(args) @(xonsh)
+            command ssh -t @(args) @(xonsh)
 
+        @utils.alias
+        def dispatch(args=()):
+            if len(args) == 0:
+                return
+
+            s = ("bash <<DISPATCH_EOF &\n{}\nDISPATCH_EOF\ndisown".format(" ".join(args)))
+            echo @(s) | bash
 
         if utils.which("exa"):
             aliases["ls"] = "exa"
