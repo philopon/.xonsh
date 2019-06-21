@@ -1,4 +1,3 @@
-/bin/
-/.vscode
+/bin/*
+!/bin/.gitkeep
 __pycache__/
-.mypy_cache/
