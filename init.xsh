@@ -148,8 +148,9 @@ def initialize_xonsh():
 
         @utils.alias
         def ssh(args=()):
+            ssh_path = utils.which("ssh")
             if len(args) != 1:
-                command ssh @(args)
+                @(ssh_path) @(args)
                 return
 
             from paramiko import SSHConfig
@@ -160,10 +161,10 @@ def initialize_xonsh():
             config = configs.lookup(args[0])
             xonsh = config.get("xonshpath")
             if xonsh is None:
-                command ssh @(args)
+                @(ssh_path) @(args)
                 return
 
-            command ssh -t @(args) @(xonsh)
+            @(ssh_path) -t @(args) @(xonsh)
 
         @utils.alias
         def dispatch(args=()):
