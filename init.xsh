@@ -152,7 +152,7 @@ def initialize_xonsh():
                 command ssh @(args)
                 return
 
-                from paramiko import SSHConfig
+            from paramiko import SSHConfig
             configs = SSHConfig()
             with open(os.path.expanduser("~/.ssh/config")) as f:
                 configs.parse(f)
