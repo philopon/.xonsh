@@ -6,7 +6,7 @@ def initialize_xonsh():
     import sys
     import subprocess
 
-    XONSH_BASE_DIR = os.path.expanduser("~/.xonsh")
+    XONSH_BASE_DIR = os.path.dirname(os.path.realpath(__file__))
     sys.path.append(os.path.join(XONSH_BASE_DIR, "lib"))
     $RIPGREP_CONFIG_PATH = os.path.join(XONSH_BASE_DIR, "ripgreprc")
     $GO111MODULE = "on"
